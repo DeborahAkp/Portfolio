@@ -2,12 +2,26 @@
     <%- include('partials/navbar.ejs') %>
 
         <!-- Portfolio -->
-        <div class="containter-sm mb-3 mt-3 mx-auto">
+        <div class="containter-sm mb-3 mt-3 mx-auto" style="max-width: 100%;">
             <h1>Portfolio</h1>
 
             <div class="row">
                 <div class="col-sm-6 mb-2">
                     <div class="card">
+                        <img src="/project-one-project-cover-image.jpeg" class="card-img-top"
+                            alt="Healthcare spelt out with scrabble blocks">
+                        <div class="card-body">
+                            <h5 class="card-title">Exploring Medical Insurance Costs</h5>
+                            <p class="card-text"> This project aims to identify how several factors impact the cost of
+                                medical insurance.
+                            </p>
+                            <a href="/portfolio/project-one" class="btn btn-primary">View Project</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div class="col-sm-6 mb-2">
+                    <div class="card">
                         <img src="..." class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">Project</h5>
@@ -16,8 +30,8 @@
                             <a href="#" class="btn btn-primary">View Project</a>
                         </div>
                     </div>
-                </div>
-
+                </div> -->
+                <!-- 
                 <div class="col-sm-6 mb-2">
                     <div class="card">
                         <img src="..." class="card-img-top" alt="...">
@@ -28,19 +42,12 @@
                             <a href="#" class="btn btn-primary">View Project</a>
                         </div>
                     </div>
-                </div>
-
-                <div class="col-sm-6 mb-2">
-                    <div class="card">
-                        <img src="..." class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Project</h5>
-                            <p class="card-text">With supporting text below as a natural lead-in to additional content.
-                            </p>
-                            <a href="#" class="btn btn-primary">View Project</a>
-                        </div>
-                    </div>
-                </div>
+                </div> -->
+            </div>
+            <div class=" mt-5 mb- 5 d-flex justify-content-around">
+                <a href="/Deborah Akpoguma 2023 Resume.pdf" download class="btn btn-primary">Download Resume</a>
+                <a href="mailto:deborahakpoguma@gmail.com" class="btn btn-primary">Contact Me</a>
             </div>
         </div>
-        <%- include('partials/end.ejs') %>
+        <%- include('partials/footer.ejs') %>
+            <%- include('partials/end.ejs') %>
