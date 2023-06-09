@@ -1,8 +1,8 @@
 # Exploring Employee Data
 - [Introduction](#introduction)
+  - [Questions to be Answered](#questions-to-be-answered)
 - [Data Cleaning](#data-cleaning)
 - [Data Analysis](#data-analysis)
-- 
 
 
 ## Introduction
