@@ -94,8 +94,8 @@ SELECT
 FROM
     employee_data;
 ```
-There are __6,284__ unique employees in the dataset. 
 
+There are __6,284__ unique employees in the dataset. 
 | no_of_employees |
 |-----------------|
 | 6284            |
@@ -132,18 +132,155 @@ FROM
 GROUP BY EmployeeID;
 ```
 __2. What is the distribution of employees across different cities, departments, and job titles?__
-  - Distribution Across Cities
+  - __Distribution Across Cities___: Employees (active and terminated) are located in __40__ cities. The city with the most employees is __Vancouver__ (1392) and the city with the least employees is __Blue River__ (1).  
     ```sql
-  
-     ```
-  - Distribution Across Departments
+     SELECT 
+        city_name,
+        COUNT(EmployeeID) AS no_of_employees
+    FROM
+        t_emp_data
+    GROUP BY city_name 
+    ORDER BY no_of_employees DESC;
+     ``` 
+    __Top 5 Cities with the Most Employees__
+    | city_name       | no_of_employees |
+    |-----------------|-----------------|
+    | Vancouver       | 1392            |
+    | Victoria        | 624             |
+    | Nanaimo         | 481             |
+    | New Westminster | 403             |
+    | Kelowna         | 305             |
+
+    __Top 5 Cities with the Fewest Employees__
+    | city_name     | no_of_employees |
+    |---------------|-----------------|
+    | Blue River    | 1               |
+    | Dease Lake    | 2               |
+    | Valemount     | 5               |
+    | Cortes Island | 6               |
+    | Ocean Falls   | 7               |
+
+  - __Distribution Across Departments__: There are __21__ departments listed in the dataset. The department with the most employees is __Meats__ (1252) and the deparment with the least employees is __Legal__ (3). This analysis includes active and terminated employees. 
     ```sql
-  
-    ``` 
-  - Distribution Across Job Titles
+    SELECT 
+        department_name,
+        COUNT(EmployeeID) AS no_of_employees
+    FROM
+        t_emp_data
+    GROUP BY department_name 
+    ORDER BY no_of_employees DESC;
+    ```
+    __Top 5 Departments with the Most Employees__
+    | department_name  | no_of_employees |
+    |------------------|-----------------|
+    | Meats            | 1252            |
+    | Customer Service | 1190            |
+    | Produce          | 1060            |
+    | Dairy            | 1033            |
+    | Bakery           | 898             |
+    
+    __Top 5 Departments with the Least Employees__
+    | department_name  | no_of_employees |
+    |------------------|-----------------|
+    | Legal            | 3               |
+    | Investment       | 4               |
+    | Compensation     | 4               |
+    | Audit            | 4               |
+    | Accounts Payable | 4               |
+
+    
+  - __Distribution Across Job Titles__: There are __32__ job titles listed in the dataset. The job title held by the most employees is __Meat Cutter__ (1218) and the job titles held by fewest employees are __CEO__ (1), __Legal Counsel__ (1), __Chief Informatin Officer__ (1), and __Dairy Manager__ (1). This analysis includes active and terminated employees.
       ```sql
-  
+    SELECT 
+        job_title,
+        COUNT(EmployeeID) AS no_of_employees
+    FROM
+        t_emp_data
+    GROUP BY job_title
+    ORDER BY no_of_employees DESC;  
        ```
- ```sql
+    
+    __Top 5 Job Titles Held by the Most Employees__
+    | job_title     | no_of_employees |
+    |---------------|-----------------|
+    | Meat Cutter   | 1218            |
+    | Cashier       | 1158            |
+    | Dairy Person  | 1032            |
+    | Produce Clerk | 1027            |
+    | Baker         | 865             |
+
+    __Top 5 Job Titles Held by the Least Employees__
+    | job_title                 | no_of_employees |
+    |---------------------------|-----------------|
+    | CEO                       | 1               |
+    | Dairy Manager             | 1               |
+    | Legal Counsel             | 1               |
+    | Chief Information Officer | 1               |
+    | Investment Analyst        | 3               |
   
- ```
+ __3. What is the overall gender ratio in the workforce?__
+  There are __3006 males__ and __3278 females__ in the workforce. <br>
+   ```sql
+    SELECT 
+         gender, 
+         COUNT(EmployeeID) AS no_of_employees
+    FROM
+        t_emp_data
+  GROUP BY gender;
+   ```
+   | gender | no_of_employees |
+   |--------|-----------------|
+   | Male   | 3006            |
+   | Female | 3278            |
+   
+__4. What is the average age and length of service for employees?__ <br>
+  The average age of employees(active and terminated) is __38 years__ and the average length of service is approximately __6.02 years__.
+  ```sql
+  SELECT 
+      CONCAT(ROUND(AVG(age)), ' years') AS average_age,
+      CONCAT(ROUND(AVG(length_of_service), 2),
+              ' years') AS average_length_of_service
+  FROM
+      t_emp_data;
+  ```
+  | average_age | average_length_of_service |
+  |-------------|---------------------------|
+  | 38 years    | 6.02 years                |
+
+__5. What percentage of employees have stayed longer than the average length of service?__ <br>
+  __46.09%__ of employees have a length of service above the average (12.84 years) length of service and __53.91%__ of employees have a length of service below the average.
+  ```sql
+  SELECT 
+      (CASE
+          WHEN length_of_service < 12.84 THEN 'Below average'
+          ELSE 'Above Average'
+      END) AS length_of_service_status,
+      COUNT(EmployeeID) AS no_of_employees,
+      CONCAT(ROUND((COUNT(EmployeeID) / 6284 * 100), 2),
+              '%') AS percentage
+  FROM
+      t_emp_data
+  GROUP BY length_of_service_status;
+  ```
+  | length_of_service_status | no_of_employees | percentage |
+  |--------------------------|-----------------|------------|
+  | Above Average            | 2896            | 46.09%     |
+  | Below average            | 3388            | 53.91%     |
+
+__6.How many employees were terminated in each year? What are the most common termination reasons and types?__ <br>
+- Employees Terminated Each Year 
+```sql
+
+```
+- Most Common Termination Reasons
+```sql
+
+```
+- Most Common Termination Types
+```sql
+
+```
+```sql
+
+```
+
