@@ -1,5 +1,5 @@
 # Exploring Employee Data
-- [Introduction](https://github.com/DeborahAkpoguma/Portfolio/edit/main/SQL/Project%204/README.md#introduction)
+- [Introduction](#introduction)
 - [Data Cleaning](#data-cleaning)
 - [Data Analysis](#data-analysis)
 - 
@@ -71,7 +71,7 @@ SET job_title = 'Chief Information Officer'
 WHERE job_title LIKE 'CHief%';
 ```
 
-## Data Cleaning
+## Data Analysis
 ```sql 
 
 ```
