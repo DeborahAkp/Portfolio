@@ -100,13 +100,32 @@ There are __6,284__ unique employees in the dataset.
 |-----------------|
 | 6284            |
 
-There are __5,336__ active and __948__ terminated employees.
-| status     | no_of_employees |
-|------------|-----------------|
-| ACTIVE     | 5336            |
-| TERMINATED | 948             |
+Number of Active and Terminated Employees Between 2006 and 2015
+| status_year | status     | no_of_employees |
+|-------------|------------|-----------------|
+| 2006        | ACTIVE     | 4445            |
+| 2006        | TERMINATED | 134             |
+| 2007        | ACTIVE     | 4521            |
+| 2007        | TERMINATED | 162             |
+| 2008        | ACTIVE     | 4603            |
+| 2008        | TERMINATED | 164             |
+| 2009        | ACTIVE     | 4710            |
+| 2009        | TERMINATED | 142             |
+| 2010        | ACTIVE     | 4840            |
+| 2010        | TERMINATED | 123             |
+| 2011        | ACTIVE     | 4972            |
+| 2011        | TERMINATED | 110             |
+| 2012        | ACTIVE     | 5101            |
+| 2012        | TERMINATED | 130             |
+| 2013        | ACTIVE     | 5215            |
+| 2013        | TERMINATED | 105             |
+| 2014        | ACTIVE     | 4962            |
+| 2014        | TERMINATED | 253             |
+| 2015        | ACTIVE     | 4799            |
+| 2015        | TERMINATED | 162             |
 
-The following query was used to select the most recent record for each employee. The data was grouped by Employee ID and the max record date was selected. A temporary table was created using this query and was used in other queries in this project. 
+
+The following query was used to select the most recent record (2015) for each employee. The data was grouped by Employee ID and the max record date was selected. A temporary table was created using this query and was used in other queries in this project. 
 ```sql
 DROP TABLE IF EXISTS t_emp_data;
 CREATE TEMPORARY TABLE IF NOT EXISTS t_emp_data
@@ -267,7 +286,7 @@ __5. What percentage of employees have stayed longer than the average length of 
   | Above Average            | 2896            | 46.09%     |
   | Below average            | 3388            | 53.91%     |
 
-__6.How many employees were terminated in each year? What are the most common termination reasons and types?__ <br>
+__6. How many employees were terminated in each year? What are the most common termination reasons and types?__ <br>
 - Employees Terminated Each Year 
 ```sql
 
@@ -280,7 +299,26 @@ __6.How many employees were terminated in each year? What are the most common te
 ```sql
 
 ```
+__7. How does employee turnover rate change over the years?__ <br>
+```sql
+
+```
+__8. Are there any relationships between employee attributes such as age, gender, or job title, and the termination reason?__ <br>
+
+__Relationship Betweeen Age and Termination Reason__
+```sql
+
+```
+__Relationship Betweeen Gender and Termination Reason__
+```sql
+
+```
+__Relationship Betweeen Job Title and Termination Reason__
 ```sql
 
 ```
 
+__9. Are there any company-wide hiring trends over the years?__ <br>
+```sql
+
+```
