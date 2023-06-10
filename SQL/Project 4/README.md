@@ -50,7 +50,7 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
   - business unit: The unit the employee works/worked in. All values are text. There were no missing values. 
 
 ## Data Cleaning
-- The date columns were imported as text, I modified them to be datetime.
+- The date columns were initially imported as text format, and I have subsequently made the necessary modifications to convert them to the appropriate datetime format.
 ```sql 
 ALTER TABLE employee_data
 MODIFY COLUMN recorddate_key datetime;
@@ -64,8 +64,7 @@ MODIFY COLUMN orighiredate_key datetime;
 ALTER TABLE employee_data
 MODIFY COLUMN terminationdate_key datetime;
 ```
-- There were inconsitencies in the job-title column. I modified the applicable job titles to ensure consistency. 
-
+- Inconsistencies were identified in the job-title column, prompting the need for corrective measures. To ensure a standardized and consistent approach, the relevant job titles were modified accordingly.
 ```sql 
 UPDATE employee_data
 SET job_title = 'Director'
@@ -111,7 +110,7 @@ WHERE job_title LIKE 'CHief%';
 ## Data Analysis
 
 __1. How many employees work or have worked for the company?__ <br>
-  - The dataset contains multiple records for each employee. The following query was used to create a temporary table that displays the most recent records for each employee. The data was grouped by Employee ID and the max record date was selected. This table will be used in subsequent queries. 
+  - The dataset comprises multiple records for each employee. To obtain a subset of the dataset with the most recent records for each employee, a query was executed to create a temporary table. The query grouped the data by Employee ID and selected the maximum record date for each group. This temporary table has been created to serve as a foundation for subsequent queries, where it will be utilized to ensure that only the most recent records are considered for analysis.
 
   ```sql
   DROP TABLE IF EXISTS t_emp_data;
@@ -201,7 +200,7 @@ __1. How many employees work or have worked for the company?__ <br>
 
 
 __2. What is the distribution of employees across different cities, departments, and job titles?__
-  - __Distribution Across Cities___: Employees (active and terminated) are located in __40__ cities. The city with the most employees is __Vancouver__ (1392) and the city with the least employees is __Blue River__ (1).  
+  - __Distribution Across Cities___: The dataset comprises employees, both active and terminated, distributed across a total of 40 cities. Notably, among these cities, the highest number of employees is recorded in Vancouver, amounting to __1392__ employees. On the other hand, Blue River has the distinction of having the smallest employee presence, with only one employee representing the workforce in that particular city.
     ```sql
      SELECT 
         city_name,
@@ -229,7 +228,7 @@ __2. What is the distribution of employees across different cities, departments,
     | Cortes Island | 6               |
     | Ocean Falls   | 7               |
 
-  - __Distribution Across Departments__: There are __21__ departments listed in the dataset. The department with the most employees is __Meats__ (1252) and the deparment with the least employees is __Legal__ (3). This analysis includes active and terminated employees. 
+  - __Distribution Across Departments__: The dataset comprises a total of __21__ distinct departments. Among these departments, the one with the highest number of employees is "Meats," with a count of 1252 employees. On the other hand, the department with the fewest number of employees is "Legal," with a minimal count of only 3 employees. It is important to note that this analysis encompasses both active and terminated employees.
     ```sql
     SELECT 
         department_name,
@@ -258,7 +257,7 @@ __2. What is the distribution of employees across different cities, departments,
     | Accounts Payable | 4               |
 
     
-  - __Distribution Across Job Titles__: There are __32__ job titles listed in the dataset. The job title held by the most employees is __Meat Cutter__ (1218) and the job titles held by fewest employees are __CEO__ (1), __Legal Counsel__ (1), __Chief Informatin Officer__ (1), and __Dairy Manager__ (1). This analysis includes active and terminated employees.
+  - __Distribution Across Job Titles__: The dataset comprises a total of __32__ unique job titles. Among these, the job title with the highest number of employees is "Meat Cutter" with a count of __1218__ employees. Conversely, the job titles with the fewest number of employees are "CEO," "Legal Counsel," "Chief Information Officer," and "Dairy Manager," each having only one employee associated with them. It is important to note that this analysis encompasses both active and terminated employees.
       ```sql
     SELECT 
         job_title,
@@ -317,7 +316,7 @@ __4. What is the average age and length of service for employees?__ <br>
   | 45 years    | 12.84 years               |
 
 __5. What percentage of employees have stayed longer than the average length of service?__ <br>
-  __54.09%__ of employees have a length of service above the average (12.84 years) length of service and __45.91%__ of employees have a length of service below the average.
+  Approximately __54.09%__ of employees demonstrate a length of service surpassing the average duration of 12.84 years, while the remaining __45.91%__ exhibit a length of service below this average.
   ```sql
   SELECT 
       (CASE
@@ -338,7 +337,7 @@ __5. What percentage of employees have stayed longer than the average length of 
 
 __6. How many employees were terminated in each year? What are the most common termination reasons and types?__ <br>
 - Employees Terminated Each Year 
-  - The following temporary table was created to reference the number of employees terminated between 2006 and 2015. There are a total of __1485 terminated employees__ in the dataset. 2014 is the year with the __most terminated employees (253)__ and 2013 is the year with the __least terminated employees (105)__.
+  - A temporary table was created to provide a reference for the number of employees who were terminated between the years 2006 and 2015. The dataset includes a total of 1485 terminated employees. Among the specified time frame, the 2014 stands out with the __highest number of terminated employees__, totaling __253__ employees. Conversely, the 2013 exhibits the __lowest number of terminated employees__, with a count of __105__ employees.
     ```sql
     DROP TABLE IF EXISTS t_term_emp;
     CREATE TEMPORARY TABLE IF NOT EXISTS t_term_emp
@@ -367,7 +366,7 @@ __6. How many employees were terminated in each year? What are the most common t
 
 
 - Most Common Termination Reasons
-  - The termination reasons listed in the dataset are Resignation, Retirement, and Layoff with the most common termination reason being retirement.  
+  - The dataset includes termination reasons categorized as Resignation, Retirement, and Layoff. Among these reasons, retirement is found to be the most prevalent termination reason. 
   ```sql
   SELECT 
       termination_reason, 
@@ -387,7 +386,7 @@ __6. How many employees were terminated in each year? What are the most common t
   | Layoff             | 215             | 14%            |
 
 - Most Common Termination Types
-  - The termination types provided in the dataset are Voluntary and Involuntary with the most common termination type being Voluntary.
+  - The dataset includes termination types classified as Voluntary and Involuntary, with the prevailing termination type being Voluntary.
   ```sql
   SELECT 
       termination_type, 
@@ -408,9 +407,9 @@ __6. How many employees were terminated in each year? What are the most common t
 
 __7. Are there any relationships between employee attributes such as age, gender, or business unit, and the termination reason?__ <br>
   - __Relationship Betweeen Age and Termination Reason__
-    - The __20 - 30__ age group had the most number of layoffs and the __60+__ age group had the least number of layoffs.
-    - The __20 - 30__ age group had the most number of resignations and the __60+__ age group had the least number of resignations.
-    - Only people over __50__ years of age have retirement as a termination reason.
+    - Within the demographic breakdown, it is noteworthy that the age group ranging from __20 to 30__ encountered the highest count of layoffs, while individuals in the __60+__ age category experienced the least number of workforce reductions.
+    - Furthermore, when examining resignations, the __20 - 30__ age group was found to have the highest volume of departures, whereas the __60+__ age group displayed the fewest resignations.
+    - An intriguing observation emerges in relation to retirement as a termination reason, as it exclusively applies to individuals surpassing __50__ years of age.
   ```sql
   SELECT 
       termination_reason,
@@ -447,8 +446,8 @@ __7. Are there any relationships between employee attributes such as age, gender
   | Retirement         | 60+       | 591             |
 
   - __Relationship Betweeen Gender and Termination Reason__
-    - The frequency of layoffs between males and females is similar.
-    - Females have a higher frequency of resignation and retirement.
+    - There is a comparable occurrence of layoffs between males and females.
+    - Females exhibit a higher frequency of resignation and retirement.
   ```sql
   SELECT 
       termination_reason,
@@ -471,7 +470,7 @@ __7. Are there any relationships between employee attributes such as age, gender
   | Retirement         | Male   | 294             |
 
   - __Relationship Betweeen Business Unit and Termination Reason__
-    - All three termination reasons are more common for employees that work in the stores. No employees that work in the headoffice have been layed off. 
+    - The prevalence of all three termination reasons is noticeably higher among employees working in the store locations. Conversely, no instances of employee layoffs have been recorded among those employed at the head office.
   ```sql
   SELECT 
       termination_reason,
@@ -494,9 +493,34 @@ __7. Are there any relationships between employee attributes such as age, gender
 
 
 __8. How does employee turnover rate change over the years?__ <br>
-```sql
-
-```
+In terms of employee turnover rates, the year that exhibited the __highest turnover rate__ was 2014, with a percentage of __5.10%__. Conversely, the year with the __lowest turnover rate was 2013__, with a percentage of __2.01%__. These findings align with the outcomes obtained from the analysis of employee terminations by year, wherein it was determined that 2014 witnessed the greatest number of employee terminations, while 2013 recorded the lowest number of employee terminations.
+  ```sql
+  SELECT 
+      a.status_year,
+      no_of_active_employees,
+      no_of_employees_terminated,
+      CONCAT(ROUND((no_of_employees_terminated / no_of_active_employees) * 100,
+                      2),
+              '%') AS employee_turnover_rate
+  FROM
+      t_active_emp a
+          JOIN
+      t_term_emp t ON a.status_year = t.year
+      WINDOW w as ()
+  ORDER BY year;
+  ```
+  | status_year | no_of_active_employees | no_of_employees_terminated | employee_turnover_rate |
+  |-------------|------------------------|----------------------------|------------------------|
+  | 2006        | 4445                   | 134                        | 3.01%                  |
+  | 2007        | 4521                   | 162                        | 3.58%                  |
+  | 2008        | 4603                   | 164                        | 3.56%                  |
+  | 2009        | 4710                   | 142                        | 3.01%                  |
+  | 2010        | 4840                   | 123                        | 2.54%                  |
+  | 2011        | 4972                   | 110                        | 2.21%                  |
+  | 2012        | 5101                   | 130                        | 2.55%                  |
+  | 2013        | 5215                   | 105                        | 2.01%                  |
+  | 2014        | 4962                   | 253                        | 5.10%                  |
+  | 2015        | 4799                   | 162                        | 3.38%                  |
 
 __9. Are there any company-wide hiring trends over the years?__ <br>
 ```sql
