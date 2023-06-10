@@ -18,8 +18,8 @@ Human resources departments, management teams, and stakeholders interested in an
 4. What is the average age and length of service for employees?
 5. What percentage of employees have stayed longer than the average length of service?
 6. How many employees were terminated in each year? What are the most common termination reasons and types?
-7. How does employee turnover rate change over the years?
-8. Are there any relationships between employee attributes such as age, gender, or job title, and the termination reason?
+7. Are there any relationships between employee attributes such as age, gender, or business unit, and the termination reason?
+8. How does employee turnover rate change over the years?
 9. Are there any company-wide hiring trends over the years?
 
 ### Tools 
@@ -83,73 +83,123 @@ UPDATE employee_data
 SET job_title = 'Chief Information Officer'
 WHERE job_title LIKE 'CHief%';
 ```
+- Employees who have been terminated on the last day of any year (December 31) are appeared as both active and terminated for that particular year in the dataset. This duplication occured because the record dates for their termination status were set to the first day of the relevant month, while the record dates for their active status were set to December 31. Consequently, when selecting Employee IDs based on their latest record dates, these employees erroneously appear as active instead of terminated.
+
+  To address this issue, it was necessary to take the following action: the latest records for employee IDs 3008, 3401, 7007, 7023, and 8296 were deliberately removed. By doing so, their status is correctly reflected as "terminated" during subsequent analysis.
+
+  ```sql
+  CREATE TEMPORARY TABLE IF NOT EXISTS t_dup_table AS (
+      SELECT e.EmployeeID, m.record_date, e.status
+  FROM
+  employee_data e
+  JOIN
+  (SELECT 
+      EmployeeID, MAX(recorddate_key) as record_date, status
+  FROM
+      employee_data
+  WHERE
+          terminationdate_key LIKE '%____-12-31%'
+  GROUP BY EmployeeID) m on (e.EmployeeID = m.EmployeeID) AND (e.recorddate_key  = m.record_date));
+
+  DELETE FROM employee_data
+  WHERE (EmployeeID, recorddate_key, STATUS) IN (
+      SELECT EmployeeID, record_date, STATUS
+      FROM t_dup_table
+  );
+  ```
 
 ## Data Analysis
 
 __1. How many employees work or have worked for the company?__ <br>
-The dataset contains multiple records for each employee from 2006 to 2015. The following query was used to determine the number of distinct employees - active and terminated - contained in the dataset.
-```sql 
-SELECT 
-    COUNT(DISTINCT EmployeeID) AS no_of_employees
-FROM
-    employee_data;
+  - The dataset contains multiple records for each employee. The following query was used to create a temporary table that displays the most recent records for each employee. The data was grouped by Employee ID and the max record date was selected. This table will be used in subsequent queries. 
+
+  ```sql
+  DROP TABLE IF EXISTS t_emp_data;
+  CREATE TEMPORARY TABLE IF NOT EXISTS t_emp_data
+  SELECT 
+      EmployeeID,
+      MAX(recorddate_key) AS record_date,
+      orighiredate_key AS hire_date,
+      terminationdate_key AS termination_date,
+      age,
+      length_of_service,
+      city_name,
+      department_name,
+      job_title,
+      store_name,
+      gender_full AS gender,
+      termreason_desc AS termination_reason,
+      termtype_desc AS termination_type,
+      STATUS_YEAR,
+      STATUS,
+      BUSINESS_UNIT
+  FROM
+      employee_data
+  GROUP BY EmployeeID;
 ```
+- The following queries were used to determine the number of unique employees - active and terminated - contained in the dataset.
+    ```sql 
+    -- Total Number of Employees
+    SELECT 
+        COUNT(EmployeeID) AS no_of_employees
+    FROM
+        t_emp_data;
 
-There are __6,284__ unique employees in the dataset. 
-| no_of_employees |
-|-----------------|
-| 6284            |
+    -- Total Number of Active and Terminated Employees
+    SELECT 
+        status, COUNT(EmployeeID) AS no_of_term_employees
+    FROM
+        t_emp_data
+    GROUP BY status;
 
-Number of Active and Terminated Employees Between 2006 and 2015
-| status_year | status     | no_of_employees |
-|-------------|------------|-----------------|
-| 2006        | ACTIVE     | 4445            |
-| 2006        | TERMINATED | 134             |
-| 2007        | ACTIVE     | 4521            |
-| 2007        | TERMINATED | 162             |
-| 2008        | ACTIVE     | 4603            |
-| 2008        | TERMINATED | 164             |
-| 2009        | ACTIVE     | 4710            |
-| 2009        | TERMINATED | 142             |
-| 2010        | ACTIVE     | 4840            |
-| 2010        | TERMINATED | 123             |
-| 2011        | ACTIVE     | 4972            |
-| 2011        | TERMINATED | 110             |
-| 2012        | ACTIVE     | 5101            |
-| 2012        | TERMINATED | 130             |
-| 2013        | ACTIVE     | 5215            |
-| 2013        | TERMINATED | 105             |
-| 2014        | ACTIVE     | 4962            |
-| 2014        | TERMINATED | 253             |
-| 2015        | ACTIVE     | 4799            |
-| 2015        | TERMINATED | 162             |
+    -- Number of Employees grouped by status year and status --- 
+    SELECT 
+        status_year,
+        status,
+        COUNT(DISTINCT EmployeeID) AS no_of_employees
+    FROM
+        employee_data
+    GROUP BY status_year , status;
+    ```
+
+    There are __6,284__ unique employees in the dataset. 
+    | no_of_employees |
+    |-----------------|
+    | 6284            |
+    
+    There are __4799 active employees__ and __1485 terminated employees__ contained in the dataset. 
+    
+    | status     | no_of_term_employees |
+    |------------|----------------------|
+    | ACTIVE     | 4799                 |
+    | TERMINATED | 1485                 |
+
+    __Number of Active and Terminated Employees Between 2006 and 2015__
+    | status_year | status     | no_of_employees |
+    |-------------|------------|-----------------|
+    | 2006        | ACTIVE     | 4445            |
+    | 2006        | TERMINATED | 134             |
+    | 2007        | ACTIVE     | 4521            |
+    | 2007        | TERMINATED | 162             |
+    | 2008        | ACTIVE     | 4603            |
+    | 2008        | TERMINATED | 164             |
+    | 2009        | ACTIVE     | 4710            |
+    | 2009        | TERMINATED | 142             |
+    | 2010        | ACTIVE     | 4840            |
+    | 2010        | TERMINATED | 123             |
+    | 2011        | ACTIVE     | 4972            |
+    | 2011        | TERMINATED | 110             |
+    | 2012        | ACTIVE     | 5101            |
+    | 2012        | TERMINATED | 130             |
+    | 2013        | ACTIVE     | 5215            |
+    | 2013        | TERMINATED | 105             |
+    | 2014        | ACTIVE     | 4962            |
+    | 2014        | TERMINATED | 253             |
+    | 2015        | ACTIVE     | 4799            |
+    | 2015        | TERMINATED | 162             |
 
 
-The following query was used to select the most recent record (2015) for each employee. The data was grouped by Employee ID and the max record date was selected. A temporary table was created using this query and was used in other queries in this project. 
-```sql
-DROP TABLE IF EXISTS t_emp_data;
-CREATE TEMPORARY TABLE IF NOT EXISTS t_emp_data
-SELECT 
-    EmployeeID,
-    MAX(recorddate_key) AS record_date,
-    orighiredate_key AS hire_date,
-    terminationdate_key AS termination_date,
-    age,
-    length_of_service,
-    city_name,
-    department_name,
-    job_title,
-    store_name,
-    gender_full AS gender,
-    termreason_desc AS termination_reason,
-    termtype_desc AS termination_type,
-    STATUS_YEAR,
-    STATUS,
-    BUSINESS_UNIT
-FROM
-    employee_data
-GROUP BY EmployeeID;
-```
+
 __2. What is the distribution of employees across different cities, departments, and job titles?__
   - __Distribution Across Cities___: Employees (active and terminated) are located in __40__ cities. The city with the most employees is __Vancouver__ (1392) and the city with the least employees is __Blue River__ (1).  
     ```sql
@@ -253,7 +303,7 @@ __2. What is the distribution of employees across different cities, departments,
    | Female | 3278            |
    
 __4. What is the average age and length of service for employees?__ <br>
-  The average age of employees(active and terminated) is __38 years__ and the average length of service is approximately __6.02 years__.
+  The average age of employees(active and terminated) is __45 years__ and the average length of service is approximately __12.84 years__.
   ```sql
   SELECT 
       CONCAT(ROUND(AVG(age)), ' years') AS average_age,
@@ -264,10 +314,10 @@ __4. What is the average age and length of service for employees?__ <br>
   ```
   | average_age | average_length_of_service |
   |-------------|---------------------------|
-  | 38 years    | 6.02 years                |
+  | 45 years    | 12.84 years               |
 
 __5. What percentage of employees have stayed longer than the average length of service?__ <br>
-  __46.09%__ of employees have a length of service above the average (12.84 years) length of service and __53.91%__ of employees have a length of service below the average.
+  __54.09%__ of employees have a length of service above the average (12.84 years) length of service and __45.91%__ of employees have a length of service below the average.
   ```sql
   SELECT 
       (CASE
@@ -283,37 +333,167 @@ __5. What percentage of employees have stayed longer than the average length of 
   ```
   | length_of_service_status | no_of_employees | percentage |
   |--------------------------|-----------------|------------|
-  | Above Average            | 2896            | 46.09%     |
-  | Below average            | 3388            | 53.91%     |
+  | Above Average            | 3399            | 54.09%     |
+  | Below average            | 2885            | 45.91%     |
 
 __6. How many employees were terminated in each year? What are the most common termination reasons and types?__ <br>
 - Employees Terminated Each Year 
-```sql
+  - The following temporary table was created to reference the number of employees terminated between 2006 and 2015. There are a total of __1485 terminated employees__ in the dataset. 2014 is the year with the __most terminated employees (253)__ and 2013 is the year with the __least terminated employees (105)__.
+    ```sql
+    DROP TABLE IF EXISTS t_term_emp;
+    CREATE TEMPORARY TABLE IF NOT EXISTS t_term_emp
+    SELECT 
+        YEAR(terminationdate_key) AS year,
+        COUNT(EmployeeID) AS no_of_employees_terminated
+    FROM
+        employee_data
+    WHERE
+        status = 'TERMINATED'
+    GROUP BY year
+    ORDER BY year;
+    ```
+    | year | no_of_employees_terminated | total_terminated |
+    |------|----------------------------|------------------|
+    | 2006 | 134                        | 134              |
+    | 2007 | 162                        | 296              |
+    | 2008 | 164                        | 460              |
+    | 2009 | 142                        | 602              |
+    | 2010 | 123                        | 725              |
+    | 2011 | 110                        | 835              |
+    | 2012 | 130                        | 965              |
+    | 2013 | 105                        | 1070             |
+    | 2014 | 253                        | 1323             |
+    | 2015 | 162                        | 1485             |
 
-```
+
 - Most Common Termination Reasons
-```sql
+  - The termination reasons listed in the dataset are Resignation, Retirement, and Layoff with the most common termination reason being retirement.  
+  ```sql
+  SELECT 
+      termination_reason, 
+      COUNT(EmployeeID) AS no_of_employees,
+      CONCAT(ROUND((COUNT(EmployeeID)/ 1485) * 100), '%') as percent_reason
+  FROM
+      t_emp_data
+  WHERE
+      termination_reason != 'Not Applicable'
+  GROUP BY termination_reason
+  ORDER BY no_of_employees DESC;
+  ```
+  | termination_reason | no_of_employees | percent_reason |
+  |--------------------|-----------------|----------------|
+  | Retirement         | 885             | 60%            |
+  | Resignaton         | 385             | 26%            |
+  | Layoff             | 215             | 14%            |
 
-```
 - Most Common Termination Types
-```sql
+  - The termination types provided in the dataset are Voluntary and Involuntary with the most common termination type being Voluntary.
+  ```sql
+  SELECT 
+      termination_type, 
+      COUNT(EmployeeID) AS no_of_employees,
+      CONCAT(ROUND((COUNT(EmployeeID)/ 1485) * 100), '%') as percent_reason
+  FROM
+      t_emp_data
+  WHERE
+      termination_type != 'Not Applicable'
+  GROUP BY termination_type
+  ORDER BY no_of_employees DESC;
+  ```
+  | termination_type | no_of_employees | percent_reason |
+  |------------------|-----------------|----------------|
+  | Voluntary        | 1270            | 86%            |
+  | Involuntary      | 215             | 14%            |
 
-```
-__7. How does employee turnover rate change over the years?__ <br>
-```sql
 
-```
-__8. Are there any relationships between employee attributes such as age, gender, or job title, and the termination reason?__ <br>
+__7. Are there any relationships between employee attributes such as age, gender, or business unit, and the termination reason?__ <br>
+  - __Relationship Betweeen Age and Termination Reason__
+    - The __20 - 30__ age group had the most number of layoffs and the __60+__ age group had the least number of layoffs.
+    - The __20 - 30__ age group had the most number of resignations and the __60+__ age group had the least number of resignations.
+    - Only people over __50__ years of age have retirement as a termination reason.
+  ```sql
+  SELECT 
+      termination_reason,
+      (CASE
+          WHEN age < 20 THEN '< 20'
+          WHEN age BETWEEN 20 AND 30 THEN '20 - 30'
+          WHEN age BETWEEN 31 AND 40 THEN '31 - 40'
+          WHEN age BETWEEN 41 AND 50 THEN '41 - 50'
+          WHEN age BETWEEN 51 AND 60 THEN '51 - 60'
+          WHEN age > 60 THEN '60+'
+      END) AS age_group,
+      COUNT(*) AS no_of_employees
+  FROM
+      t_emp_data
+  WHERE
+      termination_reason != 'Not Applicable'
+  GROUP BY termination_reason , age_group
+  ORDER BY termination_reason , age_group;
+  ```
+  | termination_reason | age_group | no_of_employees |
+  |--------------------|-----------|-----------------|
+  | Layoff             | 20 - 30   | 61              |
+  | Layoff             | 31 - 40   | 53              |
+  | Layoff             | 41 - 50   | 41              |
+  | Layoff             | 51 - 60   | 34              |
+  | Layoff             | 60+       | 26              |
+  | Resignaton         | < 20      | 5               |
+  | Resignaton         | 20 - 30   | 266             |
+  | Resignaton         | 31 - 40   | 61              |
+  | Resignaton         | 41 - 50   | 30              |
+  | Resignaton         | 51 - 60   | 21              |
+  | Resignaton         | 60+       | 2               |
+  | Retirement         | 51 - 60   | 294             |
+  | Retirement         | 60+       | 591             |
 
-__Relationship Betweeen Age and Termination Reason__
-```sql
+  - __Relationship Betweeen Gender and Termination Reason__
+    - The frequency of layoffs between males and females is similar.
+    - Females have a higher frequency of resignation and retirement.
+  ```sql
+  SELECT 
+      termination_reason,
+      gender,
+      COUNT(EmployeeID) AS no_of_employees
+  FROM
+      t_emp_data
+  WHERE
+      termination_reason != 'Not Applicable'
+  GROUP BY termination_reason , gender
+  ORDER BY termination_reason , gender;
+  ```
+  | termination_reason | gender | no_of_employees |
+  |--------------------|--------|-----------------|
+  | Layoff             | Female | 113             |
+  | Layoff             | Male   | 102             |
+  | Resignaton         | Female | 211             |
+  | Resignaton         | Male   | 174             |
+  | Retirement         | Female | 591             |
+  | Retirement         | Male   | 294             |
 
-```
-__Relationship Betweeen Gender and Termination Reason__
-```sql
+  - __Relationship Betweeen Business Unit and Termination Reason__
+    - All three termination reasons are more common for employees that work in the stores. No employees that work in the headoffice have been layed off. 
+  ```sql
+  SELECT 
+      termination_reason,
+      business_unit,
+      COUNT(*) AS no_of_employees
+  FROM
+      t_emp_data
+  WHERE
+      termination_reason != 'Not Applicable'
+  GROUP BY termination_reason , business_unit
+  ORDER BY termination_reason , business_unit;
+  ```
+  | termination_reason | business_unit | no_of_employees |
+  |--------------------|---------------|-----------------|
+  | Layoff             | STORES        | 215             |
+  | Resignaton         | HEADOFFICE    | 1               |
+  | Resignaton         | STORES        | 384             |
+  | Retirement         | HEADOFFICE    | 68              |
+  | Retirement         | STORES        | 817             |
 
-```
-__Relationship Betweeen Job Title and Termination Reason__
+
+__8. How does employee turnover rate change over the years?__ <br>
 ```sql
 
 ```
