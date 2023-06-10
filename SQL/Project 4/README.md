@@ -17,7 +17,7 @@ Human resources departments, management teams, and stakeholders interested in an
 3. What is the overall gender ratio in the workforce?
 4. What is the average age and length of service for employees?
 5. What percentage of employees have stayed longer than the average length of service?
-6. How many employees were terminated in each year? What are the most common termination reasons and types?
+6. How many employees were terminated each year? What are the most common termination reasons and types?
 7. Are there any relationships between employee attributes such as age, gender, or business unit, and the termination reason?
 8. How does employee turnover rate change over the years?
 9. Are there any company-wide hiring trends over the years?
@@ -36,7 +36,7 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
   - birth date: The birth date of the employee. All values were imported as text and converted to datetime. There were no missing values.
   - hire date: The date the employee was hired. All values were imported as text and converted to datetime. There were no missing values.
   - termination date: The employee's last day of work. All values were imported as text and converted to datetime. There were no missing values. All active employees have a termination date of '1900-01-01'.
-  - age (years): The age of the employee. All values ware integers. There were no missing values.
+  - age (years): The age of the employee. All values were integers. There were no missing values.
   - length of service (years): How long the employee has worked for the company. All values are integers. There were no missing values.
   - city: The location of the store the employee works/worked at. All values are text. There were no missing values.
   - department: The department the employee works/worked in. All values are text. There were no missing values.
@@ -45,7 +45,7 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
   - gender: The gender of the employee. All values are text. There were no missing values.
   - termination reason: Reason the employee was terminated. All values are text. There were no missing values. The termination reason for all active employees is 'Not Applicable'.
   - termination type: The type of termination of the employee. All values are text. There were no missing values. The termination type for all active employees is 'Not Applicable'.
-  - status year: The year the employee status was recorded. All values are integer. There were no missing values.
+  - status year: The year the employee status was recorded. All values are integers. There were no missing values.
   - status: Current employment status of the employee. All values are text. There were no missing values.
   - business unit: The unit the employee works/worked in. All values are text. There were no missing values. 
 
@@ -82,7 +82,7 @@ UPDATE employee_data
 SET job_title = 'Chief Information Officer'
 WHERE job_title LIKE 'CHief%';
 ```
-- Employees who have been terminated on the last day of any year (December 31) are appeared as both active and terminated for that particular year in the dataset. This duplication occured because the record dates for their termination status were set to the first day of the relevant month, while the record dates for their active status were set to December 31. Consequently, when selecting Employee IDs based on their latest record dates, these employees erroneously appear as active instead of terminated.
+- Employees who have been terminated on the last day of any year (December 31) appeared as both active and terminated for that particular year in the dataset. This duplication occurred because the record dates for their termination status were set to the first day of the relevant month, while the record dates for their active status were set to December 31. Consequently, when selecting Employee IDs based on their latest record dates, these employees erroneously appear as active instead of terminated.
 
   To address this issue, it was necessary to take the following action: the latest records for employee IDs 3008, 3401, 7007, 7023, and 8296 were deliberately removed. By doing so, their status is correctly reflected as "terminated" during subsequent analysis.
 
@@ -337,7 +337,7 @@ __5. What percentage of employees have stayed longer than the average length of 
 
 __6. How many employees were terminated in each year? What are the most common termination reasons and types?__ <br>
 - Employees Terminated Each Year 
-  - A temporary table was created to provide a reference for the number of employees who were terminated between the years 2006 and 2015. The dataset includes a total of 1485 terminated employees. Among the specified time frame, the 2014 stands out with the __highest number of terminated employees__, totaling __253__ employees. Conversely, the 2013 exhibits the __lowest number of terminated employees__, with a count of __105__ employees.
+  - A temporary table was created to provide a reference for the number of employees who were terminated between the years 2006 and 2015. The dataset includes a total of 1485 terminated employees. Among the specified time frame, the 2014 stands out with the __highest number of terminated employees__, totaling __253__ employees. Conversely, 2013 exhibits the __lowest number of terminated employees__, with a count of __105__ employees.
     ```sql
     DROP TABLE IF EXISTS t_term_emp;
     CREATE TEMPORARY TABLE IF NOT EXISTS t_term_emp
@@ -382,7 +382,7 @@ __6. How many employees were terminated in each year? What are the most common t
   | termination_reason | no_of_employees | percent_reason |
   |--------------------|-----------------|----------------|
   | Retirement         | 885             | 60%            |
-  | Resignaton         | 385             | 26%            |
+  | Resignation         | 385            | 26%            |
   | Layoff             | 215             | 14%            |
 
 - Most Common Termination Types
@@ -406,7 +406,7 @@ __6. How many employees were terminated in each year? What are the most common t
 
 
 __7. Are there any relationships between employee attributes such as age, gender, or business unit, and the termination reason?__ <br>
-  - __Relationship Betweeen Age and Termination Reason__
+  - __Relationship Between Age and Termination Reason__
     - Within the demographic breakdown, it is noteworthy that the age group ranging from __20 to 30__ encountered the highest count of layoffs, while individuals in the __60+__ age category experienced the least number of workforce reductions.
     - Furthermore, when examining resignations, the __20 - 30__ age group was found to have the highest volume of departures, whereas the __60+__ age group displayed the fewest resignations.
     - An intriguing observation emerges in relation to retirement as a termination reason, as it exclusively applies to individuals surpassing __50__ years of age.
@@ -436,16 +436,16 @@ __7. Are there any relationships between employee attributes such as age, gender
   | Layoff             | 41 - 50   | 41              |
   | Layoff             | 51 - 60   | 34              |
   | Layoff             | 60+       | 26              |
-  | Resignaton         | < 20      | 5               |
-  | Resignaton         | 20 - 30   | 266             |
-  | Resignaton         | 31 - 40   | 61              |
-  | Resignaton         | 41 - 50   | 30              |
-  | Resignaton         | 51 - 60   | 21              |
-  | Resignaton         | 60+       | 2               |
+  | Resignation         | < 20      | 5              |
+  | Resignation         | 20 - 30   | 266            |
+  | Resignation         | 31 - 40   | 61             |
+  | Resignation         | 41 - 50   | 30             |
+  | Resignation         | 51 - 60   | 21             |
+  | Resignation         | 60+       | 2              |
   | Retirement         | 51 - 60   | 294             |
   | Retirement         | 60+       | 591             |
 
-  - __Relationship Betweeen Gender and Termination Reason__
+  - __Relationship Between Gender and Termination Reason__
     - There is a comparable occurrence of layoffs between males and females.
     - Females exhibit a higher frequency of resignation and retirement.
   ```sql
@@ -464,12 +464,12 @@ __7. Are there any relationships between employee attributes such as age, gender
   |--------------------|--------|-----------------|
   | Layoff             | Female | 113             |
   | Layoff             | Male   | 102             |
-  | Resignaton         | Female | 211             |
-  | Resignaton         | Male   | 174             |
+  | Resignation        | Female | 211             |
+  | Resignation        | Male   | 174             |
   | Retirement         | Female | 591             |
   | Retirement         | Male   | 294             |
 
-  - __Relationship Betweeen Business Unit and Termination Reason__
+  - __Relationship Between Business Unit and Termination Reason__
     - The prevalence of all three termination reasons is noticeably higher among employees working in the store locations. Conversely, no instances of employee layoffs have been recorded among those employed at the head office.
   ```sql
   SELECT 
@@ -486,8 +486,8 @@ __7. Are there any relationships between employee attributes such as age, gender
   | termination_reason | business_unit | no_of_employees |
   |--------------------|---------------|-----------------|
   | Layoff             | STORES        | 215             |
-  | Resignaton         | HEADOFFICE    | 1               |
-  | Resignaton         | STORES        | 384             |
+  | Resignation        | HEADOFFICE    | 1               |
+  | Resignation        | STORES        | 384             |
   | Retirement         | HEADOFFICE    | 68              |
   | Retirement         | STORES        | 817             |
 
@@ -523,6 +523,48 @@ In terms of employee turnover rates, the year that exhibited the __highest turno
   | 2015        | 4799                   | 162                        | 3.38%                  |
 
 __9. Are there any company-wide hiring trends over the years?__ <br>
-```sql
+The count of active employees within the company exhibited an upward trend from 2006 to 2013, demonstrating a consistent annual increase. However, a noticeable decline was observed in 2014 and 2015, wherein the number of active employees decreased.
+  ```sql
+  -- Temporary Table showing the Number of active employees each year
+  DROP TABLE IF EXISTS t_active_emp;
+  CREATE TEMPORARY TABLE IF NOT EXISTS t_active_emp
+  SELECT 
+      status_year,
+      COUNT(EmployeeID) AS no_of_active_employees
+  FROM
+      employee_data
+  WHERE
+      status = 'ACTIVE'
+  GROUP BY status_year
+  ORDER BY status_year;
 
-```
+  SELECT 
+      *
+  FROM
+      t_active_emp;
+
+  -- Calculating Yearly Employee Growth 
+  SELECT 
+      a.status_year,
+      no_of_active_employees,
+      LAG(no_of_active_employees) over w as no_of_active_emp_prev_yr,
+      CONCAT(ROUND(((no_of_active_employees - LAG(no_of_active_employees) over w )/ no_of_active_employees) * 100,
+                      2),
+              '%') AS employee_growth
+  FROM
+      t_active_emp a
+      WINDOW w as ()
+  ORDER BY status_year;
+  ```
+  | status_year | no_of_active_employees | no_of_active_emp_prev_yr | employee_growth |
+  |-------------|------------------------|--------------------------|-----------------|
+  | 2006        | 4445                   | NULL                     | NULL            |
+  | 2007        | 4520                   | 4445                     | 1.66%           |
+  | 2008        | 4602                   | 4520                     | 1.78%           |
+  | 2009        | 4709                   | 4602                     | 2.27%           |
+  | 2010        | 4840                   | 4709                     | 2.71%           |
+  | 2011        | 4972                   | 4840                     | 2.65%           |
+  | 2012        | 5101                   | 4972                     | 2.53%           |
+  | 2013        | 5214                   | 5101                     | 2.17%           |
+  | 2014        | 4961                   | 5214                     | -5.10%          |
+  | 2015        | 4799                   | 4961                     | -3.38%          |
