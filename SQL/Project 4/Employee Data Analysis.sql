@@ -14,6 +14,9 @@ FROM
 -- altering columns to have datatypes that match the data they contain
 
 ALTER TABLE employee_data
+MODIFY COLUMN recorddate_key datetime;
+
+ALTER TABLE employee_data
 MODIFY COLUMN birthdate_key datetime;
 
 ALTER TABLE employee_data
@@ -21,8 +24,6 @@ MODIFY COLUMN orighiredate_key datetime;
 
 ALTER TABLE employee_data
 MODIFY COLUMN terminationdate_key datetime;
-
-
 
 -- updating job titles to ensure consistency 
 UPDATE employee_data
@@ -41,40 +42,45 @@ UPDATE employee_data
 SET job_title = 'Chief Information Officer'
 WHERE job_title LIKE 'CHief%';
 
+-- Dropping employees that show up as active and terminated in the same year 
+CREATE TEMPORARY TABLE IF NOT EXISTS t_dup_table AS (
+    SELECT e.EmployeeID, m.record_date, e.status
+FROM
+employee_data e
+JOIN
+(SELECT 
+    EmployeeID, MAX(recorddate_key) as record_date, status
+FROM
+    employee_data
+WHERE
+        terminationdate_key LIKE '%____-12-31%'
+GROUP BY EmployeeID) m on (e.EmployeeID = m.EmployeeID) AND (e.recorddate_key  = m.record_date));
+
+DELETE FROM employee_data
+WHERE (EmployeeID, recorddate_key, STATUS) IN (
+    SELECT EmployeeID, record_date, STATUS
+    FROM t_dup_table
+);
 
 -- ***************************************
 -- Number of Employees in the Dataset --- 
 -- ***************************************
 
-SELECT 
-    COUNT(DISTINCT EmployeeID) AS no_of_employees
-FROM
-    employee_data;
-    
--- *********************************************
--- Number of Terminated Employees in the Dataset --- 
--- *********************************************
-SELECT 
-    COUNT(DISTINCT EmployeeID) AS no_of_employees
-FROM
-    employee_data
-WHERE
-    status = 'Terminated';
-
--- Create temporary table to view distinct employee information 
+-- Create temporary table to view latest records for all employees
 DROP TABLE IF EXISTS t_emp_data;
 CREATE TEMPORARY TABLE IF NOT EXISTS t_emp_data
 SELECT 
     e.EmployeeID,
+    m.record_date,
     e.orighiredate_key AS hire_date,
     e.terminationdate_key AS termination_date,
     e.age,
-    length_of_service,
+    e.length_of_service,
     e.city_name,
     e.department_name,
     e.job_title,
     e.store_name,
-    e.gender_full,
+    e.gender_full AS gender,
     e.termreason_desc AS termination_reason,
     e.termtype_desc AS termination_type,
     e.STATUS_YEAR,
@@ -82,12 +88,41 @@ SELECT
     e.BUSINESS_UNIT
 FROM
     employee_data e
-JOIN (
-    SELECT EmployeeID, MAX(length_of_service) AS max_length_of_service
-    FROM employee_data
-    GROUP BY EmployeeID) m ON e.EmployeeID = m.EmployeeID and max_length_of_service = e.length_of_service
-GROUP BY EmployeeID;
+        JOIN
+    (SELECT 
+        EmployeeID, MAX(recorddate_key) AS record_date
+    FROM
+        Employee_data e
+    GROUP BY EmployeeID) m ON (e.EmployeeID = m.EmployeeID)
+        AND (e.recorddate_key = m.record_date)
+	ORDER BY EmployeeID;
 
+SELECT 
+    *
+FROM
+    t_emp_data;
+
+-- Total Number of Employees
+SELECT 
+    COUNT(EmployeeID) AS no_of_employees
+FROM
+    t_emp_data;
+    
+-- Total Number of Active and Terminated Employees
+SELECT 
+    status, COUNT(EmployeeID) AS no_of_term_employees
+FROM
+    t_emp_data
+GROUP BY status;
+
+-- Number of Employees grouped by status year and status 
+SELECT 
+    status_year,
+    status,
+    COUNT(DISTINCT EmployeeID) AS no_of_employees
+FROM
+    employee_data
+GROUP BY status_year , status;
 
 -- **********************************************************************************
 -- Distribution of employees across different cities, departments, and job titles --- 
@@ -121,7 +156,7 @@ ORDER BY no_of_employees DESC;
 -- Overall gender ratio in the workforce --- 
 -- ******************************************
 SELECT 
-    gender_full AS gender, 
+     gender,
      COUNT(EmployeeID) AS no_of_employees
 FROM
     t_emp_data
@@ -156,19 +191,19 @@ GROUP BY length_of_service_status;
 -- Number of employees terminated in each year--- 
 -- *************************************************
 
--- Create temporary table to for easy reference
+-- Create temporary table  for easy reference
 DROP TABLE IF EXISTS t_term_emp;
 CREATE TEMPORARY TABLE IF NOT EXISTS t_term_emp
 SELECT 
-    YEAR(termination_date) AS year,
-    COUNT(EmployeeID) AS no_of_employees_terminated
+    YEAR(terminationdate_key) AS year,
+    COUNT(EmployeeID) AS no_of_employees_terminated,
+    (SUM(COUNT(EmployeeID)) OVER (ORDER BY YEAR(terminationdate_key))) as total_terminated
 FROM
-    t_emp_data
+    employee_data
 WHERE
-    termination_date != '1900-01-01'
+    status = 'TERMINATED'
 GROUP BY year
 ORDER BY year;
-
 
 -- View Temporary Table 
 SELECT 
@@ -180,19 +215,23 @@ FROM
 -- Most Common Termination Reasons--- 
 -- ***********************************
 SELECT 
-    termreason_desc as termination_reason, COUNT(EmployeeID) AS no_of_employees
+    termination_reason, 
+    COUNT(EmployeeID) AS no_of_employees,
+    CONCAT(ROUND((COUNT(EmployeeID)/ 1485) * 100), '%') as percent_reason
 FROM
-    employee_data
+    t_emp_data
 WHERE
-     ttermreason_desc  != 'Not Applicable'
-GROUP BY termreason_desc
+    termination_reason != 'Not Applicable'
+GROUP BY termination_reason
 ORDER BY no_of_employees DESC;
 
 -- ***********************************
 -- Most Common Termination Type--- 
 -- ***********************************
 SELECT 
-    termination_type, COUNT(EmployeeID) AS no_of_employees
+    termination_type, 
+    COUNT(EmployeeID) AS no_of_employees,
+    CONCAT(ROUND((COUNT(EmployeeID)/ 1485) * 100), '%') as percent_reason
 FROM
     t_emp_data
 WHERE
@@ -200,54 +239,60 @@ WHERE
 GROUP BY termination_type
 ORDER BY no_of_employees DESC;
 
+
 -- *********************************************************************************************
 -- Relationships between employee attributes (age, gender, department) and termination reason -- 
 -- *********************************************************************************************
-SELECT 
-    termination_reason,
-    (CASE
-        WHEN age < 20 THEN '< 20'
-        WHEN age BETWEEN 20 AND 30 THEN '20 - 30'
-        WHEN age BETWEEN 31 AND 40 THEN '31 - 40'
-        WHEN age BETWEEN 41 AND 50 THEN '41 - 50'
-        WHEN age BETWEEN 51 AND 60 THEN '51 - 60'
-        WHEN age > 60 THEN '60+'
-    END) AS age_group,
-    COUNT(*) AS no_of_employees
-FROM
-    t_emp_data
-WHERE
-    termination_reason != 'Not Applicable'
-GROUP BY termination_reason, age_group
-ORDER BY termination_reason, age_group;
+
 
 -- gender
 SELECT 
-    termination_reason, gender_full, COUNT(EmployeeID) AS no_of_employees
+    termination_reason,
+    gender,
+    COUNT(EmployeeID) AS no_of_employees
 FROM
     t_emp_data
 WHERE
     termination_reason != 'Not Applicable'
-GROUP BY termination_reason , gender_full
-ORDER BY termination_reason , gender_full;
+GROUP BY termination_reason , gender
+ORDER BY termination_reason , gender;
 
--- department
+
+-- business unit
 SELECT 
     termination_reason,
-    department_name,
+    business_unit,
     COUNT(*) AS no_of_employees
 FROM
     t_emp_data
 WHERE
     termination_reason != 'Not Applicable'
-GROUP BY termination_reason , department_name
-ORDER BY termination_reason , department_name;
+GROUP BY termination_reason , business_unit
+ORDER BY termination_reason , business_unit;
 
--- *************************************************
--- Number of active employees  each year--- 
--- *************************************************
 
--- Create temporary table to for easy reference
+-- **********************************************
+-- Caluculating Yearly Employee Turnover Rate -- 
+-- **********************************************
+SELECT 
+    a.status_year,
+    no_of_active_employees,
+    no_of_employees_terminated,
+    CONCAT(ROUND((no_of_employees_terminated / no_of_active_employees) * 100,
+                    2),
+            '%') AS employee_turnover_rate
+FROM
+    t_active_emp a
+        JOIN
+    t_term_emp t ON a.status_year = t.year
+    WINDOW w as ()
+ORDER BY year;
+
+-- *******************************
+-- Hiring Trends over the Years--- 
+-- ********************************
+
+-- Temporary Table showing the Number of active employees each year
 DROP TABLE IF EXISTS t_active_emp;
 CREATE TEMPORARY TABLE IF NOT EXISTS t_active_emp
 SELECT 
@@ -265,90 +310,18 @@ SELECT
 FROM
     t_active_emp;
 
-
--- *************************************************
--- Number of employees hired each year--- 
--- *************************************************
-
-DROP TABLE IF EXISTS t_hired_emp;
-CREATE TEMPORARY TABLE IF NOT EXISTS t_hired_emp
-SELECT 
-    YEAR(hire_date) AS year,
-    COUNT(EmployeeID) AS no_of_employees_hired
-FROM
-    t_emp_data
-GROUP BY year
-ORDER BY year;
-
--- View Temporary Table 
-SELECT 
-    *
-FROM
-    t_hired_emp;
-    
-
-
-
-
--- *********************************************
--- Caluculating Yearly Employee Turnover Rate and Head Count Growth -- 
--- ********************************************
+-- Calculating Yearly Employee Growth 
 SELECT 
     a.status_year,
     no_of_active_employees,
     LAG(no_of_active_employees) over w as no_of_active_emp_prev_yr,
     CONCAT(ROUND(((no_of_active_employees - LAG(no_of_active_employees) over w )/ no_of_active_employees) * 100,
                     2),
-            '%') AS employee_growth,
-    no_of_employees_terminated,
-    CONCAT(ROUND((no_of_employees_terminated / no_of_active_employees) * 100,
-                    2),
-            '%') AS employee_turnover_rate
+            '%') AS employee_growth
 FROM
     t_active_emp a
-        JOIN
-    t_term_emp t ON a.status_year = t.year
     WINDOW w as ()
 ORDER BY status_year;
 
 
 
--- Ordered by turnover 
-
-SELECT 
-    a.status_year,
-    no_of_active_employees,
-    LAG(no_of_active_employees) over w as no_of_active_emp_prev_yr,
-    CONCAT(ROUND(((no_of_active_employees - LAG(no_of_active_employees) over w )/ no_of_active_employees) * 100,
-                    2),
-            '%') AS employee_growth,
-    no_of_employees_terminated,
-    CONCAT(ROUND((no_of_employees_terminated / no_of_active_employees) * 100,
-                    2),
-            '%') AS employee_turnover_rate
-FROM
-    t_active_emp a
-        JOIN
-    t_term_emp t ON a.status_year = t.year
-    WINDOW w as ()
-ORDER BY employee_turnover_rate DESC;
-
--- Ordered by head count increase
-
-SELECT 
-    a.status_year,
-    no_of_active_employees,
-    LAG(no_of_active_employees) over w as no_of_active_emp_prev_yr,
-    CONCAT(ROUND(((no_of_active_employees - LAG(no_of_active_employees) over w )/ no_of_active_employees) * 100,
-                    2),
-            '%') AS employee_growth,
-    no_of_employees_terminated,
-    CONCAT(ROUND((no_of_employees_terminated / no_of_active_employees) * 100,
-                    2),
-            '%') AS employee_turnover_rate
-FROM
-    t_active_emp a
-        JOIN
-    t_term_emp t ON a.status_year = t.year
-    WINDOW w as ()
-ORDER BY employee_growth DESC;
