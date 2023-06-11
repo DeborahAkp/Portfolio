@@ -11,7 +11,7 @@ The purpose of this project is to perform data analysis on a dataset containing 
 ### Target Audience
 Human resources departments, management teams, and stakeholders interested in analyzing employee data.
 
-### Questions to be Answered:
+### Questions to be Answered
 1. How many employees work or have worked for the company?
 2. What is the distribution of employees across different cities, departments, and job titles?
 3. What is the overall gender ratio in the workforce?
