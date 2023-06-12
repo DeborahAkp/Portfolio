@@ -33,7 +33,7 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
 ### Data 
 - The data used in this project can be found [here](https://www.kaggle.com/jr2ngb/superstore-data).
 - There are 24 columns in this dataset:
-  - "row_id": An integer column representing a unique identifier for each row in the dataset.
+  - "row_id": A text column representing a unique identifier for each row in the dataset.
   - "order_id": A text column storing the unique identifier for each order made.
   - "order_date": A date column indicating the date when the order was placed.
   - "ship_date": A date column representing the date when the order was shipped.
@@ -59,6 +59,18 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
   - "order_priority": A text column indicating the priority level of the order.
 
 ## Data Cleaning
+- To ensure that the "row_id" column contained unique values for each row, it was made the primary key of the table. All values are unique and there are no duplicates. 
+  ```sql
+  ALTER TABLE superstore
+  ADD PRIMARY KEY (row_id);
+  ```
+- The TO_DATE function was used to verify that all dates in the "order_date" and "ship_date" columns were valid,  with an appropriate date format to convert the values and identify any invalid entries.
+
+"ship_mode", "segment", "city", "state", "country", "postal_code", "market", "region", "category", "sub_category", "product_name", "order_priority": Check for any missing or invalid values in these text columns. You can use the IS NULL or IS NOT NULL conditions to identify and handle missing values. Additionally, consider applying data validation checks or referential integrity constraints based on your specific business rules.
+
+"customer_name": Validate that the "customer_name" column does not contain any unusual or unexpected characters. You can use regular expressions or specific character checks to identify and clean any non-standard characters.
+
+"sales", "quantity", "discount", "profit", "shipping_cost": Ensure that these numeric columns do not contain any missing or outlier values. You can use aggregate functions like COUNT, MIN, MAX, and AVG to check for any unusual values and apply appropriate filtering or cleansing techniques.
 ## Data Analysis
 1. __What is the overall sales performance of the global retail company?__
 2. __Which product categories and sub-categories generate the highest sales?__
