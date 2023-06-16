@@ -3,7 +3,7 @@
   - [Questions to be Answered](#questions-to-be-answered)
 - [Data Cleaning](#data-cleaning)
 - [Data Analysis](#data-analysis)
-- [Data Visualization (Tableau)](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard1?publish=yes)
+- [Data Visualization (Tableau)](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard2)
 
 
 ## Introduction
@@ -25,7 +25,7 @@ Human resources departments, management teams, and stakeholders interested in an
 
 ### Tools 
 - mySQL - View [SQL queries](https://github.com/DeborahAkpoguma/Portfolio/blob/main/SQL/Project%204/Employee%20Data%20Analysis.sql) used in this project.
-- Tableau - View the dashboard associated with this project [here](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard1?publish=yes).
+- Tableau - View the dashboard associated with this project [here](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard2).
 
 ### Portfolio
 View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/main/README.md) that I have completed.
@@ -493,7 +493,7 @@ __7. Are there any relationships between employee attributes such as age, gender
   | Retirement         | HEADOFFICE    | 68              |
   | Retirement         | STORES        | 817             |
 
-Data visualizations for these relationships can be found on [Tableau](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard1?publish=yes)
+Data visualizations for these relationships can be found on [Tableau](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard2)
 __8. How does employee turnover rate change over the years?__ <br>
 In terms of employee turnover rates, the year that exhibited the __highest turnover rate__ was 2014, with a percentage of __5.10%__. Conversely, the year with the __lowest turnover rate was 2013__, with a percentage of __2.01%__. These findings align with the outcomes obtained from the analysis of employee terminations by year, wherein it was determined that 2014 witnessed the greatest number of employee terminations, while 2013 recorded the lowest number of employee terminations.
   ```sql
