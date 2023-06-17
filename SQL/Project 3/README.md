@@ -33,30 +33,30 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
 ### Data 
 - The data used in this project can be found [here](https://www.kaggle.com/jr2ngb/superstore-data).
 - There are 24 columns in this dataset:
-  - "row_id": A text column representing a unique identifier for each row in the dataset.
-  - "order_id": A text column storing the unique identifier for each order made.
-  - "order_date": A date column indicating the date when the order was placed.
-  - "ship_date": A date column representing the date when the order was shipped.
-  - "ship_mode": A text column specifying the mode of shipment for the order.
-  - "customer_id": A text column containing the unique identifier for each customer.
-  - "customer_name": A text column storing the name of the customer.
-  - "segment": A text column indicating the customer segment or category.
-  - "city": A text column representing the city where the order was placed.
-  - "state": A text column specifying the state where the order was placed.
-  - "country": A text column indicating the country where the order was placed.
-  - "postal_code": A text column storing the postal code related to the order's location.
-  - "market": A text column indicating the market or market segment.
-  - "region": A text column specifying the region where the order was placed.
-  - "product_id": A text column containing the unique identifier for each product.
-  - "category": A text column representing the category of the product.
-  - "sub_category": A text column indicating the sub-category of the product.
-  - "product_name": A text column storing the name of the product.
-  - "sales": A numeric column representing the sales amount associated with the order.
-  - "quantity": An integer column indicating the quantity of products ordered.
-  - "discount": A numeric column representing the discount applied to the order.
-  - "profit": A numeric column indicating the profit generated from the order.
-  - "shipping_cost": A numeric column specifying the cost of shipping for the order.
-  - "order_priority": A text column indicating the priority level of the order.
+  - "row_id": A text column representing a unique identifier for each row in the dataset.There are no null values and all values are unique.
+  - "order_id": A text column storing the unique identifier for each order made.There are no null values.
+  - "order_date": A date column indicating the date when the order was placed. There are no null values and order dates range from 2011-01-01 to 2014-12-31.
+  - "ship_date": A date column representing the date when the order was shipped. There are no null values and ship dates range from 2011-03-01 to 2015-01-07.
+  - "ship_mode": A text column specifying the mode of shipment for the order. There are no null values and four distinct categories - "Second Class", "Standard Class", "Same Day", and "First Class". 
+  - "customer_id": A text column containing the unique identifier for each customer. There are no null values.
+  - "customer_name": A text column storing the name of the customer. There are no null values. 
+  - "segment": A text column indicating the customer segment or category. There are no null values and three distinct categories - "Consumer", "Coporate", and "Home Office".
+  - "city": A text column representing the city where the order was placed. There are no null values. 
+  - "state": A text column specifying the state where the order was placed. There are no null values. 
+  - "country": A text column indicating the country where the order was placed. There are no null values. 
+  - "postal_code": A text column storing the postal code related to the order's location. There are 41296 null values.
+  - "market": A text column indicating the market or market segment. There are no null values and seven distinct markets - "EMEA", "APAC", "EU", "Africa", "US", "LATAM", and "Canada". 
+  - "region": A text column specifying the region where the order was placed. There are no null values and 13 distinct regions - "EMEA", "Caribbean", "South", "Central", "North Asia", "Oceania", "Southeast Asia", "Africa", "Central Asia", "Canada", "West", "North", and "East"
+  - "product_id": A text column containing the unique identifier for each product. There are no null values. 
+  - "category": A text column representing the category of the product. There are no null values and three distinct categories - "Furniture", "Office Supplies", and "Technology". 
+  - "sub_category": A text column indicating the sub-category of the product.There are no null values and 17 distinct sub-categories -  "Tables", "Art", "Bookcases", "Storage", "Fasteners", "Envelopes", "Appliances", "Accessories", "Paper", "Phones", "Binders", "Copiers", "Labels", "Supplies", "Chairs", "Machines", and "Furnishings".
+  - "product_name": A text column storing the name of the product. There are no null values. 
+  - "sales": A numeric column representing the sales amount associated with the order. There are no null values. 
+  - "quantity": An integer column indicating the quantity of products ordered. There are no null values. 
+  - "discount": A numeric column representing the discount applied to the order. There are no null values.
+  - "profit": A numeric column indicating the profit generated from the order. There are no null values. 
+  - "shipping_cost": A numeric column specifying the cost of shipping for the order. There are no null values. 
+  - "order_priority": A text column indicating the priority level of the order. There are no null values and four distinct order priority statuses - "Critical", "High", "Medium", and "Low". 
 
 ## Data Cleaning
 - To ensure that the "row_id" column contained unique values for each row, it was made the primary key of the table. All values are unique and there are no duplicates. 
@@ -71,6 +71,7 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
 "customer_name": Validate that the "customer_name" column does not contain any unusual or unexpected characters. You can use regular expressions or specific character checks to identify and clean any non-standard characters.
 
 "sales", "quantity", "discount", "profit", "shipping_cost": Ensure that these numeric columns do not contain any missing or outlier values. You can use aggregate functions like COUNT, MIN, MAX, and AVG to check for any unusual values and apply appropriate filtering or cleansing techniques.
+
 ## Data Analysis
 1. __What is the overall sales performance of the global retail company?__
 2. __Which product categories and sub-categories generate the highest sales?__
