@@ -6,21 +6,18 @@
 
 
 ## Introduction
-This data analysis project aims to explore and gain insights from a dataset provided by a global retail company. The dataset contains various columns such as order details, customer information, product information, and financial metrics. By utilizing PostgreSQL, we can perform advanced data analysis and address key business questions related to sales performance and customer segmentation.
+This data analysis project aims to explore and gain insights from a dataset provided by a global retail company. The dataset contains various columns such as order details, customer information, product information, and financial metrics. By utilizing PostgreSQL, this project will address key business questions related to sales performance and customer segmentation.
 
 ### Target Audience
 This project is geared towards data analysts, business intelligence professionals, retail managers, and executives who are interested in conducting in-depth analysis to gain insights into sales performance and customer segmentation within a global retail company. It is also relevant for marketing professionals seeking to understand customer behavior and make informed decisions based on data-driven insights.
 
 ### Questions to be Answered
-1. What is the overall sales performance of the global retail company?
-2. Which product categories and sub-categories generate the highest sales?
-3. How do sales vary across different regions and markets?
-4. What are the trends in sales over time? Are there any seasonal patterns?
-5. How does the order priority impact sales and profitability?
-6. Can we identify customer segments based on their purchasing behavior?
-7. Which customers contribute the most to sales and profit?
-8. How does the shipping cost affect profitability?
-9. Are there any correlations between discounts, quantity, and profitability?
+__Sales Analysis__
+1. What are the total sales and profit figures for each market and region?
+2. How have the sales and profit figures evolved over time (yearly and quarterly trends)?
+3. What are the top-selling categories and sub-categories?
+4. Which customer segments contribute the most to the company's revenue and profit?
+5. How does the sales performance vary by different shipping modes and order priorities?
 
 ### Tools 
 
@@ -73,12 +70,134 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
 "sales", "quantity", "discount", "profit", "shipping_cost": Ensure that these numeric columns do not contain any missing or outlier values. You can use aggregate functions like COUNT, MIN, MAX, and AVG to check for any unusual values and apply appropriate filtering or cleansing techniques.
 
 ## Data Analysis
-1. __What is the overall sales performance of the global retail company?__
-2. __Which product categories and sub-categories generate the highest sales?__
-3. __How do sales vary across different regions and markets?__
-4. __What are the trends in sales over time? Are there any seasonal patterns?__
-5. __How does the order priority impact sales and profitability?__
-6. __Can we identify customer segments based on their purchasing behavior?__
-7. __Which customers contribute the most to sales and profit?__
-8. __How does the shipping cost affect profitability?__
-9. __Are there any correlations between discounts, quantity, and profitability?__
+
+### Sales Analysis 
+__1. What are the total sales and profit figures for each market and region?__
+```sql
+SELECT 
+	market,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	RANK() over ( ORDER BY SUM(sales) DESC) as sales_rank,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() over (ORDER BY SUM(profit) DESC ) as profit_rank
+FROM 
+	superstore
+GROUP BY market;
+```
+
+```sql
+SELECT 
+	market,
+	region,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	RANK() over (PARTITION BY market ORDER BY SUM(sales) DESC) as sales_rank,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() over (PARTITION BY market ORDER BY SUM(profit) DESC ) as profit_rank
+FROM 
+	superstore
+GROUP BY market, region;
+```
+__2. How have the sales and profit figures evolved over time (yearly and quarterly trends)?__
+```sql
+SELECT 
+	Extract(YEAR FROM order_date) as order_year,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	RANK() OVER(ORDER BY SUM(sales) DESC) as sales_rank,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() OVER(ORDER BY SUM(profit) DESC) as profit_rank
+from superstore
+GROUP BY order_year
+ORDER BY order_year;
+```
+
+```sql
+SELECT 
+	Extract(YEAR FROM order_date) as order_year,
+	(CASE 
+		WHEN EXTRACT(MONTH FROM order_date) BETWEEN 1 AND 3 THEN 'Q1'
+		WHEN EXTRACT(MONTH FROM order_date) BETWEEN 4 AND 6 THEN 'Q2'
+		WHEN EXTRACT(MONTH FROM order_date) BETWEEN 7 AND 9 THEN 'Q3'
+		ELSE 'Q4'
+  	END) AS quarter,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	RANK() OVER(PARTITION BY Extract(YEAR FROM order_date) ORDER BY SUM(sales) DESC) as sales_rank,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() OVER(PARTITION BY Extract(YEAR FROM order_date) ORDER BY SUM(profit) DESC) as profit_rank
+from superstore
+GROUP BY order_year, quarter
+ORDER BY order_year;
+```
+
+```sql
+WITH c_quarterly_sales AS(
+SELECT 
+	Extract(YEAR FROM order_date) as order_year,
+	(CASE 
+		WHEN EXTRACT(MONTH FROM order_date) BETWEEN 1 AND 3 THEN 'Q1'
+		WHEN EXTRACT(MONTH FROM order_date) BETWEEN 4 AND 6 THEN 'Q2'
+		WHEN EXTRACT(MONTH FROM order_date) BETWEEN 7 AND 9 THEN 'Q3'
+		ELSE 'Q4'
+  	END) AS quarter,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	RANK() OVER(PARTITION BY Extract(YEAR FROM order_date) ORDER BY SUM(sales) DESC) as sales_rank,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() OVER(PARTITION BY Extract(YEAR FROM order_date) ORDER BY SUM(profit) DESC) as profit_rank
+FROM
+		superstore
+GROUP BY order_year, quarter)
+SELECT * 
+FROM c_quarterly_sales 
+WHERE sales_rank IN (1,4) AND profit_rank IN (1,4)
+ORDER BY sales_rank, profit_rank;
+```
+__3. What are the top-selling categories and sub-categories?__
+```sql
+SELECT 
+	category,
+	sub_category,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() over (PARTITION BY category ORDER BY SUM(sales) DESC) AS sales_rank,
+	RANK() over (PARTITION BY category ORDER BY SUM(profit) DESC ) AS profit_rank
+FROM superstore
+GROUP BY category,sub_category;
+```
+__4. Which customer segments contribute the most to the company's revenue and profit?__
+```sql
+SELECT 
+	segment,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	RANK() over (ORDER BY SUM(sales) DESC) as sales_rank,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() over (ORDER BY SUM(profit) DESC ) as profit_rank
+FROM superstore
+GROUP BY segment
+ORDER BY total_sales DESC;
+```
+__5. How does the sales performance vary by different shipping modes and order priorities?__
+```sql
+SELECT 
+	ship_mode,
+	COUNT(ship_mode) AS no_of_orders,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	RANK() over (ORDER BY SUM(sales) DESC) as sales_rank,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() over (ORDER BY SUM(profit) DESC ) as profit_rank
+from superstore
+GROUP BY ship_mode;
+```
+
+```sql
+SELECT 
+	order_priority,
+	COUNT(order_priority) AS no_of_orders,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales,
+	RANK() over (ORDER BY SUM(sales) DESC) as sales_rank,
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit,
+	RANK() over (ORDER BY SUM(profit) DESC ) as profit_rank
+from superstore
+GROUP BY order_priority;
+```
+
+```sql
+```
