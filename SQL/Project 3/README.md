@@ -113,14 +113,14 @@ __Sales__
 - Central in the EU market has the highest total sales ($1,720,554.00), followed by North and South.
 - North in the LATAM market has the highest total sales ($622,590.78), followed by South, Central, and Caribbean.
 - West in the US market has the highest total sales ($725,457.93), followed by East, Central, and South.
-- Canada in the Canada market has the lowest total sales ($66,928.17).
+- Canada has the lowest total sales ($66,928.17).
 
 __Profit__
 - North Asia in the APAC market has the highest total profit ($165,578.42), followed by Central Asia, Oceania, and Southeast Asia.
 - Central in the EU market has the highest total profit ($215,534.07), followed by North, South.
 - North in the LATAM market has the highest total profit ($102,818.10), followed by Central, Caribbean, and South.
 - West in the US market has the highest total profit ($108,418.45), followed by East, South, and Central.
-- Canada in the Canada market has the lowest total profit ($17,817.39).
+- Canada has the lowest total profit ($17,817.39).
 
 
 |market|region        |total_sales|sales_rank    |total_profit|profit_rank|
@@ -158,7 +158,7 @@ from superstore
 GROUP BY order_year
 ORDER BY order_year;
 ```
-- The total sales have been increasing over the years. In 2011, the total sales were $2,259,451.64, and it gradually increased to $4,299,867.67 in 2014. This indicates a positive trend in sales growth over the four-year period.
+- There has been a positive trend in sales growth over the four-year period, with total sales increasing 90.3% from $2,259,451.64 in 2011 to $4,299,867.67 in 2014.
 - The total profits also show a consistent increase over the years. Starting from $248,940.81 in 2011, the profits rose to $504,165.97 in 2014. This indicates a positive trend in profit growth.
   
 |order_year|total_sales   |sales_rank|total_profit  |profit_rank|
@@ -229,8 +229,8 @@ FROM c_quarterly_sales
 WHERE sales_rank IN (1,4) AND profit_rank IN (1,4)
 ORDER BY sales_rank, profit_rank;
 ```
-- The fourth quarter consistently has the highest total sales and total profit rankings across multiple years. This suggests that the company performs exceptionally well during this quarter.
-- On the other hand, the first quarter consistently has the lowest total sales and total profit rankings across multiple years. This suggests a comparatively weaker performance during the first quarter.
+- The fourth quarter consistently has the highest total sales and total profit rankings across multiple years. 
+- On the other hand, the first quarter consistently has the lowest total sales and total profit rankings across multiple years. 
   
 |order_year|quarter       |total_sales|sales_rank    |total_profit|profit_rank|
 |----------|--------------|-----------|--------------|------------|-----------|
@@ -256,19 +256,16 @@ FROM superstore
 GROUP BY category,sub_category;
 ```
 __Furniture Category__
-- The subcategory "Chairs" has the highest total sales within the Furniture category, while the subcategory "Bookcases" has the highest total profit.
-- Both "Chairs" and "Bookcases" rank in the top two for sales and profits within the Furniture category.
-- The subcategory "Tables" has the lowest total profit, indicating that it may be less profitable compared to other subcategories within the Furniture category.
+- The subcategory "Bookcases" has the highest total profit and the 2nd-highest total sales.
+- The subcategory "Tables" has the lowest total profit.
 
 __Office Supplies Category__
 - The subcategory "Storage" has the highest total sales within the Office Supplies category, while the subcategory "Appliances" has the highest total profit.
-- Both "Storage" and "Appliances" rank in the top two for sales and profits within the Office Supplies category.
-- The subcategories "Art" and "Paper" have lower rankings in terms of both sales and profits compared to other subcategories within the Office Supplies category.
+- Labels and Fasteners have the lowest sales and profit respectively
 
 __Technology Category__
 - The subcategory "Phones" has the highest total sales within the Technology category, while the subcategory "Copiers" has the highest total profit.
-- Both "Phones" and "Copiers" rank in the top two for sales and profits within the Technology category.
-- The subcategory "Machines" has a lower ranking in terms of both sales and profits compared to other subcategories within the Technology category.
+- The subcategory "Machines" has has the lowest total profit and the subcategory "Accessories" has the lowest sales.
   
 |category|sub_category  |total_sales|total_profit  |sales_rank|profit_rank|
 |--------|--------------|-----------|--------------|----------|-----------|
@@ -305,12 +302,13 @@ ORDER BY total_sales DESC;
 ```
 __Consumer Segment__
 - The Consumer segment has the highest total sales among all the segments, indicating that it contributes the most to the company's revenue. In terms of profitability, the Consumer segment also has the highest total profit, ranking first in both sales and profit. This suggests that the Consumer segment is the most significant and profitable segment for the company.
+- The Consumer segment ranks first in both total sales and profit, constituting 51.48% and 51.06% of total sales and profit respectively. It is the most significant and the most profitable segment for the company.
 
 __Corporate Segment__
-- The Corporate segment has the second-highest total sales and total profit. While it ranks below the Consumer segment in both sales and profit, it still contributes significantly to the company's revenue and profitability. The Corporate segment is the second most important segment for the company in terms of both sales and profit.
+- The Corporate segment has the second-highest total sales and total profit.
 
 __Home Office Segment__
-- The Home Office segment has the lowest total sales and total profit among the three segments. Although it ranks third in both sales and profit, it still makes a notable contribution to the company's overall revenue and profitability. The Home Office segment represents a smaller portion of the company's business compared to the Consumer and Corporate segments.
+- The Home Office segment has the lowest total sales and total profit among the three segments. Although it ranks third in both sales and profit, it still makes a notable contribution to the company's overall revenue and profitability. 
   
 |segment|total_sales   |sales_rank|total_profit  |profit_rank|
 |-------|--------------|----------|--------------|-----------|
@@ -331,10 +329,10 @@ from superstore
 GROUP BY ship_mode;
 ```
 
-- The __"Standard Class"__ shipping mode has the highest total sales and total profit. It has the most number of orders among all the shipping modes. "Standard Class" ranks first both in terms of sales and profit.
-- The __"Second Class"__ shipping mode has the second-highest total sales and total profit. It has a considerable number of orders but is lower than the "Standard Class" shipping mode. "Second Class" ranks second both in terms of sales and profit.
-- The __"First Class"__ shipping mode has the third-highest total sales and total profit. It has a smaller number of orders compared to "Standard Class" and "Second Class" but still significant. "First Class" ranks third both in terms of sales and profit.
-- The __"Same Day"__ shipping mode has the lowest total sales and total profit among the shipping modes. It has the fewest number of orders. "Same Day" ranks fourth both in terms of sales and profit.
+- The __"Standard Class"__ shipping mode has the highest total sales and total profit. It has the most number of orders among all the shipping modes. 
+- The __"Second Class"__ shipping mode has the second-highest total sales and total profit. It has a considerable number of orders but is lower than the "Standard Class" shipping mode. 
+- The __"First Class"__ shipping mode has the third-highest total sales and total profit. It has a smaller number of orders compared to "Standard Class" and "Second Class" but still significant.
+- The __"Same Day"__ shipping mode has the lowest total sales and total profit among the shipping modes. It has the fewest number of orders. 
   
 |ship_mode|no_of_orders  |total_sales|sales_rank    |total_profit|profit_rank|
 |---------|--------------|-----------|--------------|------------|-----------|
@@ -403,7 +401,7 @@ SELECT
 	cs.year, 
 	no_of_customers_current,
 	no_of_customers_previous,
-	CONCAT(ROUND(((no_of_customers_current - no_of_customers_previous) / (no_of_customers_current::numeric) ) * 100, 2), '%') AS growth_rate,
+	CONCAT(ROUND(((no_of_customers_current - no_of_customers_previous) / (no_of_customers_previous::numeric) ) * 100, 2), '%') AS growth_rate,
 	SUM(CASE WHEN status = 'Existing Customer' THEN 1 Else 0 end) AS no_existing_customers,
 	SUM(CASE WHEN status = 'New Customer' THEN 1 Else 0 end) AS no_new_customers,
 	ROUND(((no_of_customers_current - (SUM(CASE WHEN status = 'New Customer' THEN 1 Else 0 end))) / (no_of_customers_previous::numeric)),2) AS retention_rate
@@ -415,27 +413,27 @@ ORDER BY cs.year;
 ```
 __Customer Acquisition__
 - In 2011, there were 1,309 customers acquired. As it is the first year, there is no previous year's customer count available.
-- In 2012, there were 1,373 customers, representing a growth rate of 4.66% compared to the previous year.
-- In 2013, there were 1,458 customers, representing a growth rate of 5.83% compared to the previous year.
-- In 2014, there were 1,511 customers, representing a growth rate of 3.51% compared to the previous year.
+- In 2012, there were 1,373 customers, representing a growth rate of 4.89% compared to the previous year.
+- In 2013, there were 1,458 customers, representing a growth rate of 6.19% compared to the previous year.
+- In 2014, there were 1,511 customers, representing a growth rate of 3.64% compared to the previous year.
 
 __Customer Retention__
 - The "no_existing_customers" column represents the number of customers who were classified as "Existing Customers" in each year.
 - The "no_new_customers" column represents the number of customers who were classified as "New Customers" in each year. A new customer is defined as an individual who has made a purchase during the given calendar year or whose most recent purchase date exceeds a period of one year.
 - The "retention_rate" column represents the retention rate, which is calculated as the ratio of the number of existing customers to the previous year's customer count.
-- In 2011, since it is the first year, there are no new customers, and the retention rate is not applicable (NULL).
+- In 2011, since it is the first year, it is the baseline. All customer are categorized as existing customers and the retention rate is not applicable (NULL).
 - In 2012, out of the 1,373 customers, 1,163 were existing customers, and 210 were new customers. The retention rate is 0.89 (89%).
 - In 2013, out of the 1,458 customers, 1,273 were existing customers, and 185 were new customers. The retention rate is 0.93 (93%).
 - In 2014, out of the 1,511 customers, 1,387 were existing customers, and 124 were new customers. The retention rate is 0.95 (95%).
 
-Overall, the number of customers has been increasing each year, indicating growth in customer acquisition. The retention rate is relatively high, with a consistent upward trend, suggesting that the company has been successful in retaining its customers over time.
+Overall, the number of customers has been increasing each year, indicating growth in customer acquisition. The retention rate is high, with a consistent upward trend, suggesting that the company has been successful in retaining its customers over time.
 
 |year  |no_of_customers_current|no_of_customers_previous|growth_rate   |no_existing_customers|no_new_customers|retention_rate|
 |------|-----------------------|------------------------|--------------|---------------------|----------------|--------------|
 |2011  |1309                   |NULL                    |%             |1309                 |0               |NULL          |
-|2012  |1373                   |1309                    |4.66%         |1163                 |210             |0.89          |
-|2013  |1458                   |1373                    |5.83%         |1273                 |185             |0.93          |
-|2014  |1511                   |1458                    |3.51%         |1387                 |124             |0.95          |
+|2012  |1373                   |1309                    |4.89%         |1163                 |210             |0.89          |
+|2013  |1458                   |1373                    |6.19%         |1273                 |185             |0.93          |
+|2014  |1511                   |1458                    |3.64%         |1387                 |124             |0.95          |
 
 
 __2. What is the average order value and quantity per customer?__
@@ -446,8 +444,8 @@ SELECT
 FROM 
 	superstore;
 ```
-- The __average order value__ is $246.49. This means that, on average, each order placed has a value of approximately $246.49. I
-- The __average quantity__ is 4. This indicates that, on average, customers purchase 4 units of products per order.
+- The __average order value__ is $246.49. 
+- The __average quantity__ is 4. 
   
 |average_order_value|average_quantity|
 |-------------------|----------------|
@@ -473,8 +471,8 @@ FROM
 WHERE segment_rank IN (1,3)
 ORDER BY segment_rank;
 ```
-- The __"Consumer"__ segment consistently ranks first in terms of the number of orders across various markets, including Canada, EU, Africa, LATAM, EMEA, US, and APAC. This indicates that the majority of customers in these markets belong to the "Consumer" segment.
-- The __"Home Office"__ segment ranks third in terms of the number of orders in markets such as the US, APAC, Africa, Canada, EMEA, EU, and LATAM. This suggests that the "Home Office" segment is the least popular segment in these markets.
+- The __"Consumer"__ segment consistently ranks first in terms of the number of orders across various markets, including Canada, EU, Africa, LATAM, EMEA, US, and APAC. This indicates that the majority of orders in these markets belong to the "Consumer" segment.
+- The __"Home Office"__ segment ranks last in terms of the number of orders in markets such as the US, APAC, Africa, Canada, EMEA, EU, and LATAM.
   
 |market|segment       |no_of_orders|segment_rank|
 |------|--------------|------------|------------|
@@ -630,27 +628,28 @@ SELECT
 	year, 
 	TO_CHAR(total_sales,'$9,999,999.99'),
 	TO_CHAR(total_sales_prev_year,'$9,999,999.99'),
-	CONCAT(ROUND((((total_sales) - (total_sales_prev_year))/ (total_sales)) *100, 2), '%') AS sales_growth
+	CONCAT(ROUND((((total_sales) - (total_sales_prev_year))/ (total_sales_prev_year)) *100, 2), '%') AS sales_growth
 FROM segment_growth;
 ```
-- The __"Consumer"__ segment shows a consistent positive sales growth percentage from 2011 to 2014. The sales increased by approximately 19.82%, 15.35%, and 19.24% each year compared to the previous year.
-- The __"Corporate"__ segment also demonstrates consistent sales growth. The growth percentages are approximately 10.69%, 27.28%, and 17.67% for the years 2012, 2013, and 2014, respectively.
-- The __"Home Office"__ segment exhibits the highest sales growth rates among all segments. The growth percentages are approximately 10.27%, 28.18%, and 29.30% for the years 2012, 2013, and 2014, respectively.
+- The __"Consumer"__ segment shows a consistent positive sales growth percentage from 2011 to 2014. The sales increased by approximately 24.72%, 18.14%, and 23.83% each year compared to the previous year.
+- The __"Corporate"__ segment also demonstrates consistent sales growth. The growth percentages are approximately 11.97% , 37.51%, and 21.47% for the years 2012, 2013, and 2014, respectively.
+- The __"Home Office"__ segment exhibits the highest sales growth rates among all segments. The growth percentages are approximately 11.44% , 39.23%, and 41.45% for the years 2012, 2013, and 2014, respectively.
 
-|segment|year          |to_char|to_char-2|sales_growth|
-|-------|--------------|-------|---------|------------|
-|Consumer|2011          |$ 1,173,671.84|NULL     |%           |
-|Consumer|2012          |$ 1,463,760.95|$ 1,173,671.84|19.82%      |
-|Consumer|2013          |$ 1,729,255.96|$ 1,463,760.95|15.35%      |
-|Consumer|2014          |$ 2,141,263.56|$ 1,729,255.96|19.24%      |
-|Corporate|2011          |$   691,662.80|NULL     |%           |
-|Corporate|2012          |$   774,459.92|$   691,662.80|10.69%      |
-|Corporate|2013          |$ 1,064,973.85|$   774,459.92|27.28%      |
-|Corporate|2014          |$ 1,293,602.39|$ 1,064,973.85|17.67%      |
-|Home Office|2011          |$   394,117.00|NULL     |%           |
-|Home Office|2012          |$   439,219.04|$   394,117.00|10.27%      |
-|Home Office|2013          |$   611,518.22|$   439,219.04|28.18%      |
-|Home Office|2014          |$   865,001.72|$   611,518.22|29.30%      |
+|segment    |year|total_sales   |total_sales_prev_year    |sales_growth|
+|-----------|----|--------------|--------------|------------|
+|Consumer   |2011|$ 1,173,671.84|NULL          |%           |
+|Consumer   |2012|$ 1,463,760.95|$ 1,173,671.84|24.72%      |
+|Consumer   |2013|$ 1,729,255.96|$ 1,463,760.95|18.14%      |
+|Consumer   |2014|$ 2,141,263.56|$ 1,729,255.96|23.83%      |
+|Corporate  |2011|$   691,662.80|NULL          |%           |
+|Corporate  |2012|$   774,459.92|$   691,662.80|11.97%      |
+|Corporate  |2013|$ 1,064,973.85|$   774,459.92|37.51%      |
+|Corporate  |2014|$ 1,293,602.39|$ 1,064,973.85|21.47%      |
+|Home Office|2011|$   394,117.00|NULL          |%           |
+|Home Office|2012|$   439,219.04|$   394,117.00|11.44%      |
+|Home Office|2013|$   611,518.22|$   439,219.04|39.23%      |
+|Home Office|2014|$   865,001.72|$   611,518.22|41.45%      |
+
 
 ### Operational Efficiency Analysis
 __1. What is the average shipping cost and order processing time for each shipping mode?__
@@ -728,7 +727,7 @@ SELECT
 GROUP BY ship_mode,processing_time
 ORDER BY ship_mode, processing_time;
 ```
-- Most orders in the __"First Class"__ ship mode were processed and shipped within 1-3 days, with a count of 3,821. There were no orders in this ship mode that were shipped on the same day (0 days).
+- Most orders in the __"First Class"__ ship mode were processed and shipped within 1-3 days, with a count of 3,821. 
 - For orders shipped on the __same day__, there were 1,290 orders that were processed and shipped on the same day (0 days). Additionally, there were 57 orders in the same day ship mode that took 1-3 days for processing and shipment.
 - The majority of orders in the __"Second Class"__ ship mode took 1-3 days for processing and shipment, with a count of 3,056. There were also 2,077 orders that took 4-7 days for processing and shipment.
 - In the __"Standard Class"__ ship mode, the processing and shipment time ranged from 4-7 days for the majority of orders, with a count of 15,154.
