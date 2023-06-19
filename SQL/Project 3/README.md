@@ -18,6 +18,19 @@ __Sales Analysis__
 3. What are the top-selling categories and sub-categories?
 4. Which customer segments contribute the most to the company's revenue and profit?
 5. How does the sales performance vary by different shipping modes and order priorities?
+   
+__Customer Analysis__ 
+1. How many new customers were acquired each year and what is the customer retention rate?
+2. Which customers generate the highest sales and profit?
+3. What is the average order value and quantity per customer?
+4. How does customer behavior differ across different markets?
+5. Are there any notable customer segments that have experienced significant growth or decline?
+
+__Operational Efficiency Analysis__
+1. What is the average shipping cost and order processing time for each shipping mode?
+2. Which categories and sub-categories have the highest project margins?
+3. Are there any operational inefficiencies or bottlenecks that need to be addressed?
+
 
 ### Tools 
 
@@ -54,20 +67,6 @@ View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/ma
   - "profit": A numeric column indicating the profit generated from the order. There are no null values. 
   - "shipping_cost": A numeric column specifying the cost of shipping for the order. There are no null values. 
   - "order_priority": A text column indicating the priority level of the order. There are no null values and four distinct order priority statuses - "Critical", "High", "Medium", and "Low". 
-
-## Data Cleaning
-- To ensure that the "row_id" column contained unique values for each row, it was made the primary key of the table. All values are unique and there are no duplicates. 
-  ```sql
-  ALTER TABLE superstore
-  ADD PRIMARY KEY (row_id);
-  ```
-- The TO_DATE function was used to verify that all dates in the "order_date" and "ship_date" columns were valid,  with an appropriate date format to convert the values and identify any invalid entries.
-
-"ship_mode", "segment", "city", "state", "country", "postal_code", "market", "region", "category", "sub_category", "product_name", "order_priority": Check for any missing or invalid values in these text columns. You can use the IS NULL or IS NOT NULL conditions to identify and handle missing values. Additionally, consider applying data validation checks or referential integrity constraints based on your specific business rules.
-
-"customer_name": Validate that the "customer_name" column does not contain any unusual or unexpected characters. You can use regular expressions or specific character checks to identify and clean any non-standard characters.
-
-"sales", "quantity", "discount", "profit", "shipping_cost": Ensure that these numeric columns do not contain any missing or outlier values. You can use aggregate functions like COUNT, MIN, MAX, and AVG to check for any unusual values and apply appropriate filtering or cleansing techniques.
 
 ## Data Analysis
 
@@ -199,5 +198,198 @@ from superstore
 GROUP BY order_priority;
 ```
 
+### Customer Analysis 
+__1. How many new customers were acquired each year and what is the customer retention rate?__
 ```sql
+WITH customer_count AS (
+	SELECT 
+		EXTRACT (YEAR from order_date) AS year,
+		COUNT(DISTINCT customer_id) AS no_of_customers_current,
+		LAG(COUNT(DISTINCT customer_id)) OVER () AS no_of_customers_previous
+	FROM
+		superstore 
+	GROUP BY year),
+customer_activity AS
+	(SELECT
+		customer_id,
+		EXTRACT(YEAR FROM order_date) AS year,
+		 LAG(EXTRACT(YEAR FROM order_date)) OVER (PARTITION BY customer_id ORDER BY EXTRACT(YEAR FROM order_date) ) as prev_year
+	FROM
+		superstore
+	GROUP BY customer_id, year
+	ORDER BY customer_id, year),
+customer_status AS
+	(SELECT 
+		customer_id,
+		year,
+		prev_year,
+		(year - prev_year) AS time_diff,
+		(CASE WHEN (year - prev_year) = 1 THEN 'Existing Customer'
+			WHEN (year - prev_year) > 1 THEN 'New Customer'
+		 	WHEN (year - prev_year) IS NULL AND year =  2011  THEN 'Existing Customer'
+			WHEN (year - prev_year) IS NULL THEN 'New Customer' END) AS status 
+	FROM
+		customer_activity)
+SELECT 
+	cs.year, 
+	no_of_customers_current,
+	no_of_customers_previous,
+	CONCAT(ROUND(((no_of_customers_current - no_of_customers_previous) / (no_of_customers_current::numeric) ) * 100, 2), '%') AS growth_rate,
+	SUM(CASE WHEN status = 'Existing Customer' THEN 1 Else 0 end) AS no_existing_customers,
+	SUM(CASE WHEN status = 'New Customer' THEN 1 Else 0 end) AS no_new_customers,
+	ROUND(((no_of_customers_current - (SUM(CASE WHEN status = 'New Customer' THEN 1 Else 0 end))) / (no_of_customers_previous::numeric)),2) AS retention_rate
+FROM
+	customer_status cs
+	JOIN customer_count cc ON cs.year = cc.year
+GROUP BY cs.year, no_of_customers_current, no_of_customers_previous
+ORDER BY cs.year;
+```
+__2. Which customers generate the highest sales and profit?__
+```sql
+SELECT 
+	customer_id,
+	customer_name,
+	market,
+	region,
+	TO_CHAR(SUM(sales),'$9,999,999.99') AS total_sales, 
+	TO_CHAR(SUM(profit),'$9,999,999.99') AS total_profit
+FROM
+	superstore 
+GROUP BY customer_id, customer_name, market, region
+ORDER BY total_sales DESC
+LIMIT 10;
+```
+__3. What is the average order value and quantity per customer?__
+```sql
+SELECT 
+	TO_CHAR(AVG(sales),'$9,999,999.99') AS average_order_value,
+	CEILING(AVG(quantity)) AS average_quantity
+FROM 
+	superstore;
+```
+__4. How does customer behavior differ across different markets?__
+```sql
+-- Analyzing segment trends in each market 
+		WITH market_segment AS 
+			(SELECT 
+				market, 
+				segment, 
+				COUNT(DISTINCT order_id) AS no_of_orders,
+				RANK () OVER (PARTITION BY market ORDER BY COUNT(DISTINCT order_id) DESC) AS segment_rank
+			FROM superstore
+			GROUP BY market, segment)
+		SELECT 
+			* 
+		FROM
+			market_segment
+		WHERE segment_rank IN (1,3)
+		ORDER BY segment_rank;
+		
+	-- Analyzing category trends in each market 
+		WITH market_category AS
+			(SELECT 
+				market, 
+				category, 
+				COUNT(DISTINCT order_id) AS no_of_orders,
+				RANK () OVER (PARTITION BY market ORDER BY COUNT(DISTINCT order_id) DESC) AS category_rank
+			FROM superstore
+			GROUP BY market, category)
+		SELECT 
+			* 
+		FROM
+			market_category
+		WHERE category_rank IN (1,3)
+		ORDER BY category_rank;
+	
+	-- Most Common and least common ship mode in each market 
+		WITH market_ship_mode AS 
+			(SELECT 
+				market, 
+				ship_mode, 
+				COUNT(DISTINCT order_id) AS no_of_orders,
+				RANK () OVER (PARTITION BY market ORDER BY COUNT(DISTINCT order_id) DESC) AS ship_mode_rank
+			FROM superstore
+			GROUP BY market, ship_mode)
+		SELECT 
+			* 
+		FROM
+			market_ship_mode
+		WHERE ship_mode_rank IN (1,4)
+		ORDER BY ship_mode_rank;
+  
+  -- Most Common and least common order_priority in each market
+		WITH market_order_priority AS
+			(SELECT 
+				market, 
+				order_priority, 
+				COUNT(DISTINCT order_id) AS no_of_orders,
+				RANK () OVER (PARTITION BY market ORDER BY COUNT(DISTINCT order_id) DESC) AS order_priority_rank
+			FROM superstore
+			GROUP BY market, order_priority)
+		SELECT 
+			* 
+		FROM
+			market_order_priority
+		WHERE order_priority_rank IN (1,3)
+		ORDER BY order_priority_rank;
+```
+__5. Are there any notable customer segments that have experienced significant growth or decline?__
+```sql
+WITH segment_growth AS 
+	(SELECT 
+		segment,
+		EXTRACT (YEAR from order_date) AS year,
+		SUM(sales) AS total_sales,
+		LAG(SUM(sales)) OVER (PARTITION BY segment ORDER BY TO_CHAR(SUM(sales),'$9,999,999.99')) AS total_sales_prev_year
+	FROM 
+		superstore
+	GROUP BY segment, year
+	ORDER BY segment, year)
+SELECT 
+	segment,
+	year, 
+	TO_CHAR(total_sales,'$9,999,999.99'),
+	TO_CHAR(total_sales_prev_year,'$9,999,999.99'),
+	CONCAT(ROUND((((total_sales) - (total_sales_prev_year))/ (total_sales)) *100, 2), '%') AS sales_growth
+FROM segment_growth;
+```
+
+### Operational Efficiency Analysis
+__1. What is the average shipping cost and order processing time for each shipping mode?__
+```sql
+SELECT 
+	ship_mode,
+	CEILING(AVG(ship_date - order_date)) AS avg_processing_time,
+	TO_CHAR(AVG(shipping_cost),'$9,999,999.99') AS avg_shipping_cost
+FROM
+	superstore
+GROUP BY ship_mode
+ORDER BY AVG(shipping_cost) DESC;
+```
+__2. Which categories and sub-categories have the highest project margins?__
+```sql
+SELECT 
+	category, 
+	sub_category, 
+	TO_CHAR(SUM(profit)/SUM(sales),'$9,999,999.99') AS profit_margin,
+	RANK () OVER (PARTITION BY category ORDER BY SUM(profit)/SUM(sales) DESC ) AS profit_margin_rank
+FROM
+superstore 
+GROUP BY category, sub_category;
+```
+__3. Are there any operational inefficiencies or bottlenecks that need to be addressed?__
+```sql
+SELECT 
+		ship_mode,
+		   CASE
+			WHEN ship_date - order_date = 0 THEN '0 days'
+			WHEN ship_date - order_date BETWEEN 1 AND 3 THEN '1-3 days'
+			WHEN ship_date - order_date BETWEEN 4 AND 7 THEN '4-7 days'
+			ELSE 'More than 7 days'
+		END AS processing_time,
+		COUNT(DISTINCT order_id)
+	FROM
+		superstore
+GROUP BY ship_mode,processing_time
+ORDER BY ship_mode, processing_time;
 ```
