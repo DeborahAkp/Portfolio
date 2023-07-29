@@ -3,7 +3,7 @@
   - [Questions to be Answered](#questions-to-be-answered)
 - [Data Cleaning](#data-cleaning)
 - [Data Analysis](#data-analysis)
-- [Data Visualization (Tableau)](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard2)
+- [Data Visualization (Tableau)](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard?publish=yes)
 
 
 ## Introduction
