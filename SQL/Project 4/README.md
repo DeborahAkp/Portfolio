@@ -1,4 +1,4 @@
-# Exploring Employee Termination
+# Exploring Terminated Employee Demographics
 - [Introduction](#introduction)
   - [Questions to be Answered](#questions-to-be-answered)
 - [Data Cleaning](#data-cleaning)
