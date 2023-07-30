@@ -25,7 +25,7 @@ Human resources departments, management teams, and stakeholders interested in an
 
 ### Tools 
 - mySQL - View [SQL queries](https://github.com/DeborahAkpoguma/Portfolio/blob/main/SQL/Project%204/Employee%20Data%20Analysis.sql) used in this project.
-- Tableau - View the dashboard associated with this project [here](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard2).
+- Tableau - View the dashboard associated with this project [here](https://public.tableau.com/app/profile/deborah.akpoguma/viz/ExploringtheRelationshipbetweenTerminationsandEmployeeDemographicFactors/Dashboard?publish=yes).
 
 ### Portfolio
 View other [projects](https://github.com/DeborahAkpoguma/Portfolio-Guide/blob/main/README.md) that I have completed.
